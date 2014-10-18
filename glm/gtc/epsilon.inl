@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -26,18 +26,17 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
+// Dependency:
+#include "quaternion.hpp"
+#include "../vector_relational.hpp"
+#include "../common.hpp"
+#include "../vec2.hpp"
+#include "../vec3.hpp"
+#include "../vec4.hpp"
+
 namespace glm
 {
-	GLM_FUNC_QUALIFIER bool epsilonEqual
-	(
-		glm::half const & x,
-		glm::half const & y,
-		glm::half const & epsilon
-	)
-	{
-		return abs(x - y) < epsilon;
-	}
-
+	template <>
 	GLM_FUNC_QUALIFIER bool epsilonEqual
 	(
 		float const & x,
@@ -48,6 +47,7 @@ namespace glm
 		return abs(x - y) < epsilon;
 	}
 
+	template <>
 	GLM_FUNC_QUALIFIER bool epsilonEqual
 	(
 		double const & x,
@@ -58,16 +58,7 @@ namespace glm
 		return abs(x - y) < epsilon;
 	}
 
-	GLM_FUNC_QUALIFIER bool epsilonNotEqual
-	(
-		glm::half const & x,
-		glm::half const & y,
-		glm::half const & epsilon
-	)
-	{
-		return abs(x - y) >= epsilon;
-	}
-
+	template <>
 	GLM_FUNC_QUALIFIER bool epsilonNotEqual
 	(
 		float const & x,
@@ -78,6 +69,7 @@ namespace glm
 		return abs(x - y) >= epsilon;
 	}
 
+	template <>
 	GLM_FUNC_QUALIFIER bool epsilonNotEqual
 	(
 		double const & x,
@@ -88,199 +80,71 @@ namespace glm
 		return abs(x - y) >= epsilon;
 	}
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<bool, P> epsilonEqual
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<bool, P> epsilonEqual
 	(
-		detail::tvec2<T, P> const & x,
-		detail::tvec2<T, P> const & y,
-		T const & epsilon)
-	{
-		return detail::tvec2<bool, P>(
-			abs(x.x - y.x) < epsilon,
-			abs(x.y - y.y) < epsilon);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<bool, P> epsilonEqual
-	(
-		detail::tvec2<T, P> const & x,
-		detail::tvec2<T, P> const & y,
-		detail::tvec2<T, P> const & epsilon
-	)
-	{
-		return detail::tvec2<bool, P>(
-			abs(x.x - y.x) < epsilon.x,
-			abs(x.y - y.y) < epsilon.y);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<bool, P> epsilonEqual
-	(
-		detail::tvec3<T, P> const & x,
-		detail::tvec3<T, P> const & y,
-		T const & epsilon)
-	{
-		return detail::tvec3<bool, P>(
-			abs(x.x - y.x) < epsilon,
-			abs(x.y - y.y) < epsilon,
-			abs(x.z - y.z) < epsilon);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<bool, P> epsilonEqual
-	(
-		detail::tvec3<T, P> const & x,
-		detail::tvec3<T, P> const & y,
-		detail::tvec3<T, P> const & epsilon
-	)
-	{
-		return detail::tvec3<bool, P>(
-			abs(x.x - y.x) < epsilon.x,
-			abs(x.y - y.y) < epsilon.y,
-			abs(x.z - y.z) < epsilon.z);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> epsilonEqual
-	(
-		detail::tvec4<T, P> const & x,
-		detail::tvec4<T, P> const & y,
+		vecType<T, P> const & x,
+		vecType<T, P> const & y,
 		T const & epsilon
 	)
 	{
-		return detail::tvec4<bool, P>(
-			abs(x.x - y.x) < epsilon,
-			abs(x.y - y.y) < epsilon,
-			abs(x.z - y.z) < epsilon,
-			abs(x.w - y.w) < epsilon);
+		return lessThan(abs(x - y), vecType<T, P>(epsilon));
 	}
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> epsilonEqual
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<bool, P> epsilonEqual
 	(
-		detail::tvec4<T, P> const & x,
-		detail::tvec4<T, P> const & y,
-		detail::tvec4<T, P> const & epsilon
+		vecType<T, P> const & x,
+		vecType<T, P> const & y,
+		vecType<T, P> const & epsilon
 	)
 	{
-		return detail::tvec4<bool, P>(
-			abs(x.x - y.x) < epsilon.x,
-			abs(x.y - y.y) < epsilon.y,
-			abs(x.z - y.z) < epsilon.z,
-			abs(x.w - y.w) < epsilon.w);
+		return lessThan(abs(x - y), vecType<T, P>(epsilon));
 	}
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<bool, P> epsilonNotEqual
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<bool, P> epsilonNotEqual
 	(
-		detail::tvec2<T, P> const & x,
-		detail::tvec2<T, P> const & y,
+		vecType<T, P> const & x,
+		vecType<T, P> const & y,
 		T const & epsilon
 	)
 	{
-		return detail::tvec2<bool, P>(
-			abs(x.x - y.x) >= epsilon,
-			abs(x.y - y.y) >= epsilon);
+		return greaterThanEqual(abs(x - y), vecType<T, P>(epsilon));
 	}
 
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<bool, P> epsilonNotEqual
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<bool, P> epsilonNotEqual
 	(
-		detail::tvec2<T, P> const & x,
-		detail::tvec2<T, P> const & y,
-		detail::tvec2<T, P> const & epsilon
+		vecType<T, P> const & x,
+		vecType<T, P> const & y,
+		vecType<T, P> const & epsilon
 	)
 	{
-		return detail::tvec2<bool, P>(
-			abs(x.x - y.x) >= epsilon.x,
-			abs(x.y - y.y) >= epsilon.y);
+		return greaterThanEqual(abs(x - y), vecType<T, P>(epsilon));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<bool, P> epsilonNotEqual
+	GLM_FUNC_QUALIFIER tvec4<bool, P> epsilonEqual
 	(
-		detail::tvec3<T, P> const & x,
-		detail::tvec3<T, P> const & y,
+		tquat<T, P> const & x,
+		tquat<T, P> const & y,
 		T const & epsilon
 	)
 	{
-		return detail::tvec3<bool, P>(
-			abs(x.x - y.x) >= epsilon,
-			abs(x.y - y.y) >= epsilon,
-			abs(x.z - y.z) >= epsilon);
+		tvec4<T, P> v(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w);
+		return lessThan(abs(v), tvec4<T, P>(epsilon));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<bool, P> epsilonNotEqual
+	GLM_FUNC_QUALIFIER tvec4<bool, P> epsilonNotEqual
 	(
-		detail::tvec3<T, P> const & x,
-		detail::tvec3<T, P> const & y,
-		detail::tvec3<T, P> const & epsilon
-	)
-	{
-		return detail::tvec3<bool, P>(
-			abs(x.x - y.x) >= epsilon.x,
-			abs(x.y - y.y) >= epsilon.y,
-			abs(x.z - y.z) >= epsilon.z);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> epsilonNotEqual
-	(
-		detail::tvec4<T, P> const & x,
-		detail::tvec4<T, P> const & y,
+		tquat<T, P> const & x,
+		tquat<T, P> const & y,
 		T const & epsilon
 	)
 	{
-		return detail::tvec4<bool, P>(
-			abs(x.x - y.x) >= epsilon,
-			abs(x.y - y.y) >= epsilon,
-			abs(x.z - y.z) >= epsilon,
-			abs(x.w - y.w) >= epsilon);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> epsilonNotEqual
-	(
-		detail::tvec4<T, P> const & x,
-		detail::tvec4<T, P> const & y,
-		detail::tvec4<T, P> const & epsilon
-	)
-	{
-		return detail::tvec4<bool, P>(
-			abs(x.x - y.x) >= epsilon.x,
-			abs(x.y - y.y) >= epsilon.y,
-			abs(x.z - y.z) >= epsilon.z,
-			abs(x.w - y.w) >= epsilon.w);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> epsilonEqual
-	(
-		detail::tquat<T, P> const & x,
-		detail::tquat<T, P> const & y,
-		T const & epsilon
-	)
-	{
-		return detail::tvec4<bool, P>(
-			abs(x.x - y.x) < epsilon,
-			abs(x.y - y.y) < epsilon,
-			abs(x.z - y.z) < epsilon,
-			abs(x.w - y.w) < epsilon);
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> epsilonNotEqual
-	(
-		detail::tquat<T, P> const & x,
-		detail::tquat<T, P> const & y,
-		T const & epsilon
-	)
-	{
-		return detail::tvec4<bool, P>(
-			abs(x.x - y.x) >= epsilon,
-			abs(x.y - y.y) >= epsilon,
-			abs(x.z - y.z) >= epsilon,
-			abs(x.w - y.w) >= epsilon);
+		tvec4<T, P> v(x.x - y.x, x.y - y.y, x.z - y.z, x.w - y.w);
+		return greaterThanEqual(abs(v), tvec4<T, P>(epsilon));
 	}
 }//namespace glm

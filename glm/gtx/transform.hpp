@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -38,14 +38,13 @@
 /// <glm/gtx/transform.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_transform 
-#define GLM_GTX_transform GLM_VERSION
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
 #include "../gtc/matrix_transform.hpp"
 
-#if(defined(GLM_MESSAGES) && !defined(glm_ext))
+#if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
 #	pragma message("GLM: GLM_GTX_transform extension included")
 #endif
 
@@ -58,27 +57,25 @@ namespace glm
 	/// - From \link gtx_transform GLM_GTX_transform \endlink extension
 	/// - See also: \link glm::translate GLM_GTC_matrix_transform \endlink
 	template <typename T, precision P>
-	detail::tmat4x4<T, P> translate(
-		detail::tvec3<T, P> const & v);
+	GLM_FUNC_DECL tmat4x4<T, P> translate(
+		tvec3<T, P> const & v);
 
 	/// Builds a rotation 4 * 4 matrix created from an axis of 3 scalars and an angle expressed in degrees. 
 	/// - From \link gtx_transform GLM_GTX_transform \endlink extension
 	/// - See also: \link glm::rotate GLM_GTC_matrix_transform \endlink
 	template <typename T, precision P>
-	detail::tmat4x4<T, P> rotate(
+	GLM_FUNC_DECL tmat4x4<T, P> rotate(
 		T angle, 
-		detail::tvec3<T, P> const & v);
+		tvec3<T, P> const & v);
 
 	/// Transforms a matrix with a scale 4 * 4 matrix created from a vector of 3 components.
 	/// - From \link gtx_transform GLM_GTX_transform \endlink extension
 	/// - See also: \link glm::scale GLM_GTC_matrix_transform \endlink
 	template <typename T, precision P>
-	detail::tmat4x4<T, P> scale(
-		detail::tvec3<T, P> const & v);
+	GLM_FUNC_DECL tmat4x4<T, P> scale(
+		tvec3<T, P> const & v);
 
 	/// @}
 }// namespace glm
 
 #include "transform.inl"
-
-#endif//GLM_GTX_transform

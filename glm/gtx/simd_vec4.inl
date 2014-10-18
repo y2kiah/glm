@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2009-05-07
 // Updated : 2009-05-07
@@ -59,7 +59,7 @@ GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const v[4]) :
 //fvec4SIMD(ref4<float> const & r);
 
 //////////////////////////////////////
-// Convertion vector constructors
+// Conversion vector constructors
 
 GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec2 const & v, float const & s1, float const & s2) :
 	Data(_mm_set_ps(s2, s1, v.y, v.x))

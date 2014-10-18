@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2008-08-31
 // Updated : 2011-05-31
@@ -8,70 +8,72 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define GLM_SWIZZLE
-#include <glm/glm.hpp>
+#include <glm/vector_relational.hpp>
+#include <glm/vec2.hpp>
+#include <vector>
 
 int test_vec2_operators()
 {
-    int Error = 0;
-    
-    {
-        glm::vec2 A(1.0f);
-        glm::vec2 B(1.0f);
-        Error += A != B ? 1 : 0;
-        Error += A == B ? 0 : 1;
-    }
-    
-    {
-        glm::vec2 A(1.0f);
-        glm::vec2 C = A + 1.0f;
-        A += 1.0f;
-        Error += A.x == 2.0f && A.y == 2.0f ? 0 : 1;
-        Error += A.x == C.x && A.y == C.y ? 0 : 1;
-    }
-    
-    {
-        glm::vec2 A(1.0f);
-        glm::vec2 B(2.0f,-1.0f);
-        glm::vec2 C = A + B;
-        A += B;
-        Error += A.x == 3.0f && A.y == 0.0f ? 0 : 1;
-        Error += A.x == C.x && A.y == C.y ? 0 : 1;
-    }
-    
-    {
-        glm::vec2 A(1.0f);
-        glm::vec2 C = A - 1.0f;
-        A -= 1.0f;
-        Error += A.x == 0.0f && A.y == 0.0f ? 0 : 1;
-        Error += A.x == C.x && A.y == C.y ? 0 : 1;
-    }
-    
-    {
-        glm::vec2 A(1.0f);
-        glm::vec2 B(2.0f,-1.0f);
-        glm::vec2 C = A - B;
-        A -= B;
-        Error += A.x == -1.0f && A.y == 2.0f ? 0 : 1;
-        Error += A.x == C.x && A.y == C.y ? 0 : 1;
-    }
-  
-    {
-        glm::vec2 A(1.0f);
-        glm::vec2 C = A * 2.0f;
-        A *= 2.0f;
-        Error += A.x == 2.0f && A.y == 2.0f ? 0 : 1;
-        Error += A.x == C.x && A.y == C.y ? 0 : 1;
-    }
-    
-    {
-        glm::vec2 A(2.0f);
-        glm::vec2 B(2.0f);
-        glm::vec2 C = A / B;
-        A /= B;
-        Error += A.x == 1.0f && A.y == 1.0f ? 0 : 1;
-        Error += A.x == C.x && A.y == C.y ? 0 : 1;
-    }    
-    
+	int Error = 0;
+
+	{
+		glm::vec2 A(1.0f);
+		glm::vec2 B(1.0f);
+		Error += A != B ? 1 : 0;
+		Error += A == B ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(1.0f);
+		glm::vec2 C = A + 1.0f;
+		A += 1.0f;
+		Error += A.x == 2.0f && A.y == 2.0f ? 0 : 1;
+		Error += A.x == C.x && A.y == C.y ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(1.0f);
+		glm::vec2 B(2.0f,-1.0f);
+		glm::vec2 C = A + B;
+		A += B;
+		Error += A.x == 3.0f && A.y == 0.0f ? 0 : 1;
+		Error += A.x == C.x && A.y == C.y ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(1.0f);
+		glm::vec2 C = A - 1.0f;
+		A -= 1.0f;
+		Error += A.x == 0.0f && A.y == 0.0f ? 0 : 1;
+		Error += A.x == C.x && A.y == C.y ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(1.0f);
+		glm::vec2 B(2.0f,-1.0f);
+		glm::vec2 C = A - B;
+		A -= B;
+		Error += A.x == -1.0f && A.y == 2.0f ? 0 : 1;
+		Error += A.x == C.x && A.y == C.y ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(1.0f);
+		glm::vec2 C = A * 2.0f;
+		A *= 2.0f;
+		Error += A.x == 2.0f && A.y == 2.0f ? 0 : 1;
+		Error += A.x == C.x && A.y == C.y ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(2.0f);
+		glm::vec2 B(2.0f);
+		glm::vec2 C = A / B;
+		A /= B;
+		Error += A.x == 1.0f && A.y == 1.0f ? 0 : 1;
+		Error += A.x == C.x && A.y == C.y ? 0 : 1;
+	}
+
 	{
 		glm::vec2 A(1.0f, 2.0f);
 		glm::vec2 B(4.0f, 5.0f);
@@ -153,6 +155,12 @@ int test_vec2_operators()
 		B /= 2.0f;
 		Error += B == glm::vec2(2, 1.25) ? 0 : 1;
 	}
+	{
+		glm::vec2 B(2.0f);
+
+		B /= B.y;
+		Error += B == glm::vec2(1.0f) ? 0 : 1;
+	}
 	
 	{
 		glm::vec2 A(1.0f, 2.0f);
@@ -191,20 +199,50 @@ int test_vec2_operators()
 
 int test_vec2_ctor()
 {
-    int Error = 0;
-    
-    {
-        glm::vec2 A = glm::vec2(2.0f);
-        glm::vec2 B = glm::vec2(2.0f, 3.0f);
-        glm::vec2 C = glm::vec2(2.0f, 3.0);
-        //glm::vec2 D = glm::dvec2(2.0); // Build error TODO: What does the specification says?
-        glm::vec2 E(glm::dvec2(2.0));
-        glm::vec2 F(glm::ivec2(2));
-        
-    }
-    
+	int Error = 0;
+
+#if GLM_HAS_INITIALIZER_LISTS
+	{
+		glm::vec2 a{ 0, 1 };
+		std::vector<glm::vec2> v = {
+			{0, 1},
+			{4, 5},
+			{8, 9}};
+	}
+
+	{
+		glm::dvec2 a{ 0, 1 };
+		std::vector<glm::dvec2> v = {
+			{0, 1},
+			{4, 5},
+			{8, 9}};
+	}
+#endif
+
+#if GLM_HAS_ANONYMOUS_UNION && defined(GLM_SWIZZLE)
+	{
+		glm::vec2 A = glm::vec2(1.0f, 2.0f);
+		glm::vec2 B = A.xy;
+		glm::vec2 C(A.xy);
+		glm::vec2 D(A.xy());
+
+		Error += glm::all(glm::equal(A, B)) ? 0 : 1;
+		Error += glm::all(glm::equal(A, C)) ? 0 : 1;
+		Error += glm::all(glm::equal(A, D)) ? 0 : 1;
+	}
+#endif// GLM_HAS_ANONYMOUS_UNION && defined(GLM_SWIZZLE)
+
+	{
+		glm::vec2 A = glm::vec2(2.0f);
+		glm::vec2 B = glm::vec2(2.0f, 3.0f);
+		glm::vec2 C = glm::vec2(2.0f, 3.0);
+		//glm::vec2 D = glm::dvec2(2.0); // Build error TODO: What does the specification says?
+		glm::vec2 E(glm::dvec2(2.0));
+		glm::vec2 F(glm::ivec2(2));
+	}
+
 	return Error;
-}   
+}
 
 int test_vec2_size()
 {
@@ -250,6 +288,9 @@ int test_operator_increment()
 int main()
 {
 	int Error = 0;
+
+	glm::vec2 v;
+	assert(v.length() == 2);
 
 	Error += test_vec2_size();
 	Error += test_vec2_ctor();

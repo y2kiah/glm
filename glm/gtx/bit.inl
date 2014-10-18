@@ -1,11 +1,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2007-03-14
-// Updated : 2008-11-14
+// Updated : 2013-12-25
 // Licence : This source is under MIT License
 // File    : glm/gtx/bit.inl
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+#include "../detail/_vectorize.hpp"
+#include <limits>
 
 namespace glm
 {
@@ -19,298 +22,6 @@ namespace glm
 	}
 
 	VECTORIZE_VEC(mask)
-
-	// extractField
-	template <typename genIType>
-	GLM_FUNC_QUALIFIER genIType extractField
-	(
-		half const & value, 
-		genIType const & first, 
-		genIType const & count
-	)
-	{
-		assert(first + count < sizeof(half));
-		return (value._data() << first) >> ((sizeof(half) << 3) - count);
-	}
-
-	template <typename genIType>
-	GLM_FUNC_QUALIFIER genIType extractField
-	(
-		float const & value, 
-		genIType const & first, 
-		genIType const & count
-	)
-	{
-		assert(first + count < sizeof(float));
-		return (detail::uif32(value).i << first) >> ((sizeof(float) << 3) - count);
-	}
-
-	template <typename genIType>
-	GLM_FUNC_QUALIFIER genIType extractField
-	(
-		double const & value, 
-		genIType const & first, 
-		genIType const & count
-	)
-	{
-		assert(first + count < sizeof(double));
-		return (detail::uif64(value).i << first) >> ((sizeof(double) << genIType(3)) - count);
-	}
-
-	template <typename genIUType, typename sizeType>
-	GLM_FUNC_QUALIFIER genIUType extractField
-	(
-		genIUType const & Value,
-		sizeType const & First,
-		sizeType const & Count
-	)
-	{
-		sizeType GenSize = sizeof(genIUType) << 3;
-
-		assert(First + Count <= GenSize);
-
-		genIUType ShiftLeft = Count ? Value << (GenSize - (Count + First)) : 0;
-		genIUType ShiftBack = ShiftLeft >> genIUType(GenSize - Count);
-
-		return ShiftBack;
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> extractField
-	(
-		detail::tvec2<T, P> const & value,
-		sizeType const & first, 
-		sizeType const & count
-	)
-	{
-		return detail::tvec2<T, P>(
-			extractField(value[0], first, count),
-			extractField(value[1], first, count));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> extractField
-	(
-		detail::tvec3<T, P> const & value,
-		sizeType const & first,
-		sizeType const & count
-	)
-	{
-		return detail::tvec3<T, P>(
-			extractField(value[0], first, count),
-			extractField(value[1], first, count),
-			extractField(value[2], first, count));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> extractField
-	(
-		detail::tvec4<T, P> const & value,
-		sizeType const & first,
-		sizeType const & count
-	)
-	{
-		return detail::tvec4<T, P>(
-			extractField(value[0], first, count),
-			extractField(value[1], first, count),
-			extractField(value[2], first, count),
-			extractField(value[3], first, count));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> extractField
-	(
-		detail::tvec2<T, P> const & value, 
-		detail::tvec2<sizeType, P> const & first, 
-		detail::tvec2<sizeType, P> const & count
-	)
-	{
-		return detail::tvec2<T, P>(
-			extractField(value[0], first[0], count[0]),
-			extractField(value[1], first[1], count[1]));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> extractField
-	(
-		detail::tvec3<T, P> const & value, 
-		detail::tvec3<sizeType, P> const & first, 
-		detail::tvec3<sizeType, P> const & count
-	)
-	{
-		return detail::tvec3<T, P>(
-			extractField(value[0], first[0], count[0]),
-			extractField(value[1], first[1], count[1]),
-			extractField(value[2], first[2], count[2]));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> extractField
-	(
-		detail::tvec4<T, P> const & value, 
-		detail::tvec4<sizeType, P> const & first, 
-		detail::tvec4<sizeType, P> const & count
-	)
-	{
-		return detail::tvec4<T, P>(
-			extractField(value[0], first[0], count[0]),
-			extractField(value[1], first[1], count[1]),
-			extractField(value[2], first[2], count[2]),
-			extractField(value[3], first[3], count[3]));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> extractField
-	(
-		T const & value, 
-		detail::tvec2<sizeType, P> const & first, 
-		detail::tvec2<sizeType, P> const & count
-	)
-	{
-		return detail::tvec2<T, P>(
-			extractField(value, first[0], count[0]),
-			extractField(value, first[1], count[1]));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> extractField
-	(
-		T const & value,
-		detail::tvec3<sizeType, P> const & first,
-		detail::tvec3<sizeType, P> const & count
-	)
-	{
-		return detail::tvec3<T, P>(
-			extractField(value, first[0], count[0]),
-			extractField(value, first[1], count[1]),
-			extractField(value, first[2], count[2]));
-	}
-
-	template <typename T, precision P, typename sizeType>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> extractField
-	(
-		T const & value,
-		detail::tvec4<sizeType, P> const & first,
-		detail::tvec4<sizeType, P> const & count
-	)
-	{
-		return detail::tvec4<T, P>(
-			extractField(value, first[0], count[0]),
-			extractField(value, first[1], count[1]),
-			extractField(value, first[2], count[2]),
-			extractField(value, first[3], count[3]));
-	}
-
-	// lowestBit
-	template <typename genType>
-	GLM_FUNC_QUALIFIER int lowestBit
-	(
-		genType const & Value
-	)
-	{
-		assert(Value != genType(0)); // not valid call
-
-		genType Bit;
-		for(Bit = genType(0); !(Value & (1 << Bit)); ++Bit){}
-		return Bit;
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<int, P> lowestBit
-	(
-		detail::tvec2<T, P> const & value
-	)
-	{
-		return detail::tvec2<int, P>(
-			lowestBit(value[0]),
-			lowestBit(value[1]));
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<int, P> lowestBit
-	(
-		detail::tvec3<T, P> const & value
-	)
-	{
-		return detail::tvec3<int, P>(
-			lowestBit(value[0]),
-			lowestBit(value[1]),
-			lowestBit(value[2]));
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<int, P> lowestBit
-	(
-		detail::tvec4<T, P> const & value
-	)
-	{
-		return detail::tvec4<int, P>(
-			lowestBit(value[0]),
-			lowestBit(value[1]),
-			lowestBit(value[2]),
-			lowestBit(value[3]));
-	}
-
-	// highestBit
-	template <typename genType>
-	GLM_FUNC_QUALIFIER int highestBit
-	(
-		genType const & value
-	)
-	{
-		assert(value != genType(0)); // not valid call
-
-		genType bit = genType(-1);
-		for(genType tmp = value; tmp; tmp >>= 1, ++bit){}
-		return bit;
-	}
-
-	//template <>
-	//GLM_FUNC_QUALIFIER int highestBit<int>
-	//(
-	//	int value
-	//)
-	//{
-	//	int bit = -1;
-	//	for(int tmp = value; tmp; tmp >>= 1, ++bit);
-	//	return bit;
-	//}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<int, P> highestBit
-	(
-		detail::tvec2<T, P> const & value
-	)
-	{
-		return detail::tvec2<int, P>(
-			highestBit(value[0]),
-			highestBit(value[1]));
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<int, P> highestBit
-	(
-		detail::tvec3<T, P> const & value
-	)
-	{
-		return detail::tvec3<int, P>(
-			highestBit(value[0]),
-			highestBit(value[1]),
-			highestBit(value[2]));
-	}
-
-	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<int, P> highestBit
-	(
-		detail::tvec4<T, P> const & value
-	)
-	{
-		return detail::tvec4<int, P>(
-			highestBit(value[0]),
-			highestBit(value[1]),
-			highestBit(value[2]),
-			highestBit(value[3]));
-	}
 
 	// highestBitValue
 	template <typename genType>
@@ -330,35 +41,35 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<int, P> highestBitValue
+	GLM_FUNC_QUALIFIER tvec2<int, P> highestBitValue
 	(
-		detail::tvec2<T, P> const & value
+		tvec2<T, P> const & value
 	)
 	{
-		return detail::tvec2<int, P>(
+		return tvec2<int, P>(
 			highestBitValue(value[0]),
 			highestBitValue(value[1]));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<int, P> highestBitValue
+	GLM_FUNC_QUALIFIER tvec3<int, P> highestBitValue
 	(
-		detail::tvec3<T, P> const & value
+		tvec3<T, P> const & value
 	)
 	{
-		return detail::tvec3<int, P>(
+		return tvec3<int, P>(
 			highestBitValue(value[0]),
 			highestBitValue(value[1]),
 			highestBitValue(value[2]));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<int, P> highestBitValue
+	GLM_FUNC_QUALIFIER tvec4<int, P> highestBitValue
 	(
-		detail::tvec4<T, P> const & value
+		tvec4<T, P> const & value
 	)
 	{
-		return detail::tvec4<int, P>(
+		return tvec4<int, P>(
 			highestBitValue(value[0]),
 			highestBitValue(value[1]),
 			highestBitValue(value[2]),
@@ -380,35 +91,35 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<bool, P> isPowerOfTwo
+	GLM_FUNC_QUALIFIER tvec2<bool, P> isPowerOfTwo
 	(
-		detail::tvec2<T, P> const & value
+		tvec2<T, P> const & value
 	)
 	{
-		return detail::tvec2<bool, P>(
+		return tvec2<bool, P>(
 			isPowerOfTwo(value[0]),
 			isPowerOfTwo(value[1]));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<bool, P> isPowerOfTwo
+	GLM_FUNC_QUALIFIER tvec3<bool, P> isPowerOfTwo
 	(
-		detail::tvec3<T, P> const & value
+		tvec3<T, P> const & value
 	)
 	{
-		return detail::tvec3<bool, P>(
+		return tvec3<bool, P>(
 			isPowerOfTwo(value[0]),
 			isPowerOfTwo(value[1]),
 			isPowerOfTwo(value[2]));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> isPowerOfTwo
+	GLM_FUNC_QUALIFIER tvec4<bool, P> isPowerOfTwo
 	(
-		detail::tvec4<T, P> const & value
+		tvec4<T, P> const & value
 	)
 	{
-		return detail::tvec4<bool, P>(
+		return tvec4<bool, P>(
 			isPowerOfTwo(value[0]),
 			isPowerOfTwo(value[1]),
 			isPowerOfTwo(value[2]),
@@ -478,38 +189,38 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> bitRotateRight
+	GLM_FUNC_QUALIFIER tvec2<T, P> bitRotateRight
 	(
-		detail::tvec2<T, P> const & Value, 
+		tvec2<T, P> const & Value, 
 		std::size_t Shift
 	)
 	{
-		return detail::tvec2<T, P>(
+		return tvec2<T, P>(
 			bitRotateRight(Value[0], Shift),
 			bitRotateRight(Value[1], Shift));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> bitRotateRight
+	GLM_FUNC_QUALIFIER tvec3<T, P> bitRotateRight
 	(
-		detail::tvec3<T, P> const & Value, 
+		tvec3<T, P> const & Value, 
 		std::size_t Shift
 	)
 	{
-		return detail::tvec3<T, P>(
+		return tvec3<T, P>(
 			bitRotateRight(Value[0], Shift),
 			bitRotateRight(Value[1], Shift),
 			bitRotateRight(Value[2], Shift));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> bitRotateRight
+	GLM_FUNC_QUALIFIER tvec4<T, P> bitRotateRight
 	(
-		detail::tvec4<T, P> const & Value, 
+		tvec4<T, P> const & Value, 
 		std::size_t Shift
 	)
 	{
-		return detail::tvec4<T, P>(
+		return tvec4<T, P>(
 			bitRotateRight(Value[0], Shift),
 			bitRotateRight(Value[1], Shift),
 			bitRotateRight(Value[2], Shift),
@@ -526,38 +237,38 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> bitRotateLeft
+	GLM_FUNC_QUALIFIER tvec2<T, P> bitRotateLeft
 	(
-		detail::tvec2<T, P> const & Value, 
+		tvec2<T, P> const & Value, 
 		std::size_t Shift
 	)
 	{
-		return detail::tvec2<T, P>(
+		return tvec2<T, P>(
 			bitRotateLeft(Value[0], Shift),
 			bitRotateLeft(Value[1], Shift));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> bitRotateLeft
+	GLM_FUNC_QUALIFIER tvec3<T, P> bitRotateLeft
 	(
-		detail::tvec3<T, P> const & Value, 
+		tvec3<T, P> const & Value, 
 		std::size_t Shift
 	)
 	{
-		return detail::tvec3<T, P>(
+		return tvec3<T, P>(
 			bitRotateLeft(Value[0], Shift),
 			bitRotateLeft(Value[1], Shift),
 			bitRotateLeft(Value[2], Shift));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> bitRotateLeft
+	GLM_FUNC_QUALIFIER tvec4<T, P> bitRotateLeft
 	(
-		detail::tvec4<T, P> const & Value, 
+		tvec4<T, P> const & Value, 
 		std::size_t Shift
 	)
 	{
-		return detail::tvec4<T, P>(
+		return tvec4<T, P>(
 			bitRotateLeft(Value[0], Shift),
 			bitRotateLeft(Value[1], Shift),
 			bitRotateLeft(Value[2], Shift),
@@ -576,7 +287,7 @@ namespace glm
 		assert(ToBit <= sizeof(genIUType) * std::size_t(8));
 
 		genIUType Result = Value;
-		for(std::size_t i = 0; i <= ToBit; ++i)
+		for(signed i = 0; i <= ToBit; ++i)
 			Result |= (1 << i);
 		return Result;
 	}
@@ -593,7 +304,7 @@ namespace glm
 		assert(ToBit <= sizeof(genIUType) * std::size_t(8));
 
 		genIUType Result = Value;
-		for(std::size_t i = 0; i <= ToBit; ++i)
+		for(signed i = 0; i <= ToBit; ++i)
 			Result &= ~(1 << i);
 		return Result;
 	}
@@ -601,13 +312,13 @@ namespace glm
 	namespace detail
 	{
 		template <typename PARAM, typename RET>
-		RET bitfieldInterleave(PARAM x, PARAM y);
+		GLM_FUNC_DECL RET bitfieldInterleave(PARAM x, PARAM y);
 
 		template <typename PARAM, typename RET>
-		RET bitfieldInterleave(PARAM x, PARAM y, PARAM z);
+		GLM_FUNC_DECL RET bitfieldInterleave(PARAM x, PARAM y, PARAM z);
 
 		template <typename PARAM, typename RET>
-		RET bitfieldInterleave(PARAM x, PARAM y, PARAM z, PARAM w);
+		GLM_FUNC_DECL RET bitfieldInterleave(PARAM x, PARAM y, PARAM z, PARAM w);
 
 /*
 		template <typename PARAM, typename RET>
@@ -647,7 +358,7 @@ namespace glm
 		}
 */
 		template <>
-		inline glm::uint16 bitfieldInterleave(glm::uint8 x, glm::uint8 y)
+		GLM_FUNC_QUALIFIER glm::uint16 bitfieldInterleave(glm::uint8 x, glm::uint8 y)
 		{
 			glm::uint16 REG1(x);
 			glm::uint16 REG2(y);
@@ -665,7 +376,7 @@ namespace glm
 		}
 
 		template <>
-		inline glm::uint32 bitfieldInterleave(glm::uint16 x, glm::uint16 y)
+		GLM_FUNC_QUALIFIER glm::uint32 bitfieldInterleave(glm::uint16 x, glm::uint16 y)
 		{
 			glm::uint32 REG1(x);
 			glm::uint32 REG2(y);
@@ -686,7 +397,7 @@ namespace glm
 		}
 
 		template <>
-		inline glm::uint64 bitfieldInterleave(glm::uint32 x, glm::uint32 y)
+		GLM_FUNC_QUALIFIER glm::uint64 bitfieldInterleave(glm::uint32 x, glm::uint32 y)
 		{
 			glm::uint64 REG1(x);
 			glm::uint64 REG2(y);
@@ -710,7 +421,63 @@ namespace glm
 		}
 
 		template <>
-		inline glm::uint64 bitfieldInterleave(glm::uint32 x, glm::uint32 y, glm::uint32 z)
+		GLM_FUNC_QUALIFIER glm::uint32 bitfieldInterleave(glm::uint8 x, glm::uint8 y, glm::uint8 z)
+		{
+			glm::uint32 REG1(x);
+			glm::uint32 REG2(y);
+			glm::uint32 REG3(z);
+			
+			REG1 = ((REG1 << 16) | REG1) & glm::uint32(0x00FF0000FF0000FF);
+			REG2 = ((REG2 << 16) | REG2) & glm::uint32(0x00FF0000FF0000FF);
+			REG3 = ((REG3 << 16) | REG3) & glm::uint32(0x00FF0000FF0000FF);
+			
+			REG1 = ((REG1 <<  8) | REG1) & glm::uint32(0xF00F00F00F00F00F);
+			REG2 = ((REG2 <<  8) | REG2) & glm::uint32(0xF00F00F00F00F00F);
+			REG3 = ((REG3 <<  8) | REG3) & glm::uint32(0xF00F00F00F00F00F);
+			
+			REG1 = ((REG1 <<  4) | REG1) & glm::uint32(0x30C30C30C30C30C3);
+			REG2 = ((REG2 <<  4) | REG2) & glm::uint32(0x30C30C30C30C30C3);
+			REG3 = ((REG3 <<  4) | REG3) & glm::uint32(0x30C30C30C30C30C3);
+			
+			REG1 = ((REG1 <<  2) | REG1) & glm::uint32(0x9249249249249249);
+			REG2 = ((REG2 <<  2) | REG2) & glm::uint32(0x9249249249249249);
+			REG3 = ((REG3 <<  2) | REG3) & glm::uint32(0x9249249249249249);
+			
+			return REG1 | (REG2 << 1) | (REG3 << 2);
+		}
+		
+		template <>
+		GLM_FUNC_QUALIFIER glm::uint64 bitfieldInterleave(glm::uint16 x, glm::uint16 y, glm::uint16 z)
+		{
+			glm::uint64 REG1(x);
+			glm::uint64 REG2(y);
+			glm::uint64 REG3(z);
+			
+			REG1 = ((REG1 << 32) | REG1) & glm::uint64(0xFFFF00000000FFFF);
+			REG2 = ((REG2 << 32) | REG2) & glm::uint64(0xFFFF00000000FFFF);
+			REG3 = ((REG3 << 32) | REG3) & glm::uint64(0xFFFF00000000FFFF);
+			
+			REG1 = ((REG1 << 16) | REG1) & glm::uint64(0x00FF0000FF0000FF);
+			REG2 = ((REG2 << 16) | REG2) & glm::uint64(0x00FF0000FF0000FF);
+			REG3 = ((REG3 << 16) | REG3) & glm::uint64(0x00FF0000FF0000FF);
+			
+			REG1 = ((REG1 <<  8) | REG1) & glm::uint64(0xF00F00F00F00F00F);
+			REG2 = ((REG2 <<  8) | REG2) & glm::uint64(0xF00F00F00F00F00F);
+			REG3 = ((REG3 <<  8) | REG3) & glm::uint64(0xF00F00F00F00F00F);
+			
+			REG1 = ((REG1 <<  4) | REG1) & glm::uint64(0x30C30C30C30C30C3);
+			REG2 = ((REG2 <<  4) | REG2) & glm::uint64(0x30C30C30C30C30C3);
+			REG3 = ((REG3 <<  4) | REG3) & glm::uint64(0x30C30C30C30C30C3);
+			
+			REG1 = ((REG1 <<  2) | REG1) & glm::uint64(0x9249249249249249);
+			REG2 = ((REG2 <<  2) | REG2) & glm::uint64(0x9249249249249249);
+			REG3 = ((REG3 <<  2) | REG3) & glm::uint64(0x9249249249249249);
+			
+			return REG1 | (REG2 << 1) | (REG3 << 2);
+		}
+		
+		template <>
+		GLM_FUNC_QUALIFIER glm::uint64 bitfieldInterleave(glm::uint32 x, glm::uint32 y, glm::uint32 z)
 		{
 			glm::uint64 REG1(x);
 			glm::uint64 REG2(y);
@@ -740,7 +507,33 @@ namespace glm
 		}
 
 		template <>
-		inline glm::uint64 bitfieldInterleave(glm::uint16 x, glm::uint16 y, glm::uint16 z, glm::uint16 w)
+		GLM_FUNC_QUALIFIER glm::uint32 bitfieldInterleave(glm::uint8 x, glm::uint8 y, glm::uint8 z, glm::uint8 w)
+		{
+			glm::uint32 REG1(x);
+			glm::uint32 REG2(y);
+			glm::uint32 REG3(z);
+			glm::uint32 REG4(w);
+			
+			REG1 = ((REG1 << 12) | REG1) & glm::uint32(0x000F000F000F000F);
+			REG2 = ((REG2 << 12) | REG2) & glm::uint32(0x000F000F000F000F);
+			REG3 = ((REG3 << 12) | REG3) & glm::uint32(0x000F000F000F000F);
+			REG4 = ((REG4 << 12) | REG4) & glm::uint32(0x000F000F000F000F);
+			
+			REG1 = ((REG1 <<  6) | REG1) & glm::uint32(0x0303030303030303);
+			REG2 = ((REG2 <<  6) | REG2) & glm::uint32(0x0303030303030303);
+			REG3 = ((REG3 <<  6) | REG3) & glm::uint32(0x0303030303030303);
+			REG4 = ((REG4 <<  6) | REG4) & glm::uint32(0x0303030303030303);
+			
+			REG1 = ((REG1 <<  3) | REG1) & glm::uint32(0x1111111111111111);
+			REG2 = ((REG2 <<  3) | REG2) & glm::uint32(0x1111111111111111);
+			REG3 = ((REG3 <<  3) | REG3) & glm::uint32(0x1111111111111111);
+			REG4 = ((REG4 <<  3) | REG4) & glm::uint32(0x1111111111111111);
+			
+			return REG1 | (REG2 << 1) | (REG3 << 2) | (REG4 << 3);
+		}
+		
+		template <>
+		GLM_FUNC_QUALIFIER glm::uint64 bitfieldInterleave(glm::uint16 x, glm::uint16 y, glm::uint16 z, glm::uint16 w)
 		{
 			glm::uint64 REG1(x);
 			glm::uint64 REG2(y);
@@ -771,7 +564,7 @@ namespace glm
 		}
 	}//namespace detail
 
-	inline int16 bitfieldInterleave(int8 x, int8 y)
+	GLM_FUNC_QUALIFIER int16 bitfieldInterleave(int8 x, int8 y)
 	{
 		union sign8
 		{
@@ -792,12 +585,12 @@ namespace glm
 		return result.i;
 	}
 
-	inline uint16 bitfieldInterleave(uint8 x, uint8 y)
+	GLM_FUNC_QUALIFIER uint16 bitfieldInterleave(uint8 x, uint8 y)
 	{
 		return detail::bitfieldInterleave<uint8, uint16>(x, y);
 	}
 
-	inline int32 bitfieldInterleave(int16 x, int16 y)
+	GLM_FUNC_QUALIFIER int32 bitfieldInterleave(int16 x, int16 y)
 	{
 		union sign16
 		{
@@ -818,12 +611,12 @@ namespace glm
 		return result.i;
 	}
 
-	inline uint32 bitfieldInterleave(uint16 x, uint16 y)
+	GLM_FUNC_QUALIFIER uint32 bitfieldInterleave(uint16 x, uint16 y)
 	{
 		return detail::bitfieldInterleave<uint16, uint32>(x, y);
 	}
 
-	inline int64 bitfieldInterleave(int32 x, int32 y)
+	GLM_FUNC_QUALIFIER int64 bitfieldInterleave(int32 x, int32 y)
 	{
 		union sign32
 		{
@@ -844,12 +637,12 @@ namespace glm
 		return result.i;
 	}
 
-	inline uint64 bitfieldInterleave(uint32 x, uint32 y)
+	GLM_FUNC_QUALIFIER uint64 bitfieldInterleave(uint32 x, uint32 y)
 	{
 		return detail::bitfieldInterleave<uint32, uint64>(x, y);
 	}
 
-	inline int32 bitfieldInterleave(int8 x, int8 y, int8 z)
+	GLM_FUNC_QUALIFIER int32 bitfieldInterleave(int8 x, int8 y, int8 z)
 	{
 		union sign8
 		{
@@ -871,12 +664,12 @@ namespace glm
 		return result.i;
 	}
 
-	inline uint32 bitfieldInterleave(uint8 x, uint8 y, uint8 z)
+	GLM_FUNC_QUALIFIER uint32 bitfieldInterleave(uint8 x, uint8 y, uint8 z)
 	{
 		return detail::bitfieldInterleave<uint8, uint32>(x, y, z);
 	}
 
-	inline int64 bitfieldInterleave(int16 x, int16 y, int16 z)
+	GLM_FUNC_QUALIFIER int64 bitfieldInterleave(int16 x, int16 y, int16 z)
 	{
 		union sign16
 		{
@@ -898,12 +691,12 @@ namespace glm
 		return result.i;
 	}
 
-	inline uint64 bitfieldInterleave(uint16 x, uint16 y, uint16 z)
+	GLM_FUNC_QUALIFIER uint64 bitfieldInterleave(uint16 x, uint16 y, uint16 z)
 	{
 		return detail::bitfieldInterleave<uint32, uint64>(x, y, z);
 	}
 
-	inline int64 bitfieldInterleave(int32 x, int32 y, int32 z)
+	GLM_FUNC_QUALIFIER int64 bitfieldInterleave(int32 x, int32 y, int32 z)
 	{
 		union sign16
 		{
@@ -925,12 +718,12 @@ namespace glm
 		return result.i;
 	}
 
-	inline uint64 bitfieldInterleave(uint32 x, uint32 y, uint32 z)
+	GLM_FUNC_QUALIFIER uint64 bitfieldInterleave(uint32 x, uint32 y, uint32 z)
 	{
 		return detail::bitfieldInterleave<uint32, uint64>(x, y, z);
 	}
 
-	inline int32 bitfieldInterleave(int8 x, int8 y, int8 z, int8 w)
+	GLM_FUNC_QUALIFIER int32 bitfieldInterleave(int8 x, int8 y, int8 z, int8 w)
 	{
 		union sign8
 		{
@@ -948,17 +741,17 @@ namespace glm
 		sign_y.i = y;
 		sign_z.i = z;
 		sign_w.i = w;
-		result.u = bitfieldInterleave(sign_x.u, sign_y.u, sign_z.u);
+		result.u = bitfieldInterleave(sign_x.u, sign_y.u, sign_z.u, sign_w.u);
 
 		return result.i;
 	}
 
-	inline uint32 bitfieldInterleave(uint8 x, uint8 y, uint8 z, uint8 w)
+	GLM_FUNC_QUALIFIER uint32 bitfieldInterleave(uint8 x, uint8 y, uint8 z, uint8 w)
 	{
-		return detail::bitfieldInterleave<uint8, uint32>(x, y, z);
+		return detail::bitfieldInterleave<uint8, uint32>(x, y, z, w);
 	}
 
-	inline int64 bitfieldInterleave(int16 x, int16 y, int16 z, int16 w)
+	GLM_FUNC_QUALIFIER int64 bitfieldInterleave(int16 x, int16 y, int16 z, int16 w)
 	{
 		union sign16
 		{
@@ -976,12 +769,12 @@ namespace glm
 		sign_y.i = y;
 		sign_z.i = z;
 		sign_w.i = w;
-		result.u = bitfieldInterleave(sign_x.u, sign_y.u, sign_z.u);
+		result.u = bitfieldInterleave(sign_x.u, sign_y.u, sign_z.u, sign_w.u);
 
 		return result.i;
 	}
 
-	inline uint64 bitfieldInterleave(uint16 x, uint16 y, uint16 z, uint16 w)
+	GLM_FUNC_QUALIFIER uint64 bitfieldInterleave(uint16 x, uint16 y, uint16 z, uint16 w)
 	{
 		return detail::bitfieldInterleave<uint16, uint64>(x, y, z, w);
 	}

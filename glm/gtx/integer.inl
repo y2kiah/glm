@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2005-12-24
 // Updated : 2011-10-13
@@ -38,7 +38,7 @@ namespace glm
 	}
 
 // Henry Gordon Dietz: http://aggregate.org/MAGIC/
-namespace _detail
+namespace detail
 {
 	GLM_FUNC_QUALIFIER unsigned int ones32(unsigned int x)
 	{
@@ -55,19 +55,18 @@ namespace _detail
 	}
 
 	template <>
-	struct _compute_log2<detail::float_or_int_value::GLM_INT>
+	struct compute_log2<false>
 	{
 		template <typename T>
 		GLM_FUNC_QUALIFIER T operator() (T const & Value) const
 		{
 #if(GLM_COMPILER & (GLM_COMPILER_VC | GLM_COMPILER_GCC))
-			return Value <= T(1) ? T(0) : T(32) - nlz(Value - T(1));
+			return Value <= static_cast<T>(1) ? T(0) : T(32) - nlz(Value - T(1));
 #else
 			return T(32) - nlz(Value - T(1));
 #endif
 		}
 	};
-
 }//namespace _detail
 
 	// Henry Gordon Dietz: http://aggregate.org/MAGIC/
@@ -101,29 +100,29 @@ namespace _detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> factorial(
-		detail::tvec2<T, P> const & x)
+	GLM_FUNC_QUALIFIER tvec2<T, P> factorial(
+		tvec2<T, P> const & x)
 	{
-		return detail::tvec2<T, P>(
+		return tvec2<T, P>(
 			factorial(x.x),
 			factorial(x.y));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> factorial(
-		detail::tvec3<T, P> const & x)
+	GLM_FUNC_QUALIFIER tvec3<T, P> factorial(
+		tvec3<T, P> const & x)
 	{
-		return detail::tvec3<T, P>(
+		return tvec3<T, P>(
 			factorial(x.x),
 			factorial(x.y),
 			factorial(x.z));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> factorial(
-		detail::tvec4<T, P> const & x)
+	GLM_FUNC_QUALIFIER tvec4<T, P> factorial(
+		tvec4<T, P> const & x)
 	{
-		return detail::tvec4<T, P>(
+		return tvec4<T, P>(
 			factorial(x.x),
 			factorial(x.y),
 			factorial(x.z),

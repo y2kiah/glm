@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2011-05-03
 // Updated : 2011-05-03
@@ -7,7 +7,7 @@
 // File    : test/core/func_integer.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <glm/glm.hpp>
+#include <glm/integer.hpp>
 #include <iostream>
 
 enum result
@@ -170,15 +170,7 @@ namespace findMSB
 		{0x08000000, 27},
 		{0x10000000, 28},
 		{0x20000000, 29},
-		{0x40000000, 30},
-		{0x80000000, 30},
-		{0xffffffff, -1},
-		{0xfffffffe,  0},
-		{0xfffffffd,  1},
-		{0xfffffffc,  1},
-		{0xfffffffb,  2},
-		{0xfffffffa,  2},
-		{0xfffffff0,  3}
+		{0x40000000, 30}
 	};
 
 	int test()
@@ -204,15 +196,14 @@ namespace findLSB
 		genType		Value;
 		genType		Return;
 	};
-    
+
 	type<int> const DataI32[] =
 	{
 		{0x00000001,  0},
-        {0x00000003,  0},
-        {0x00000002,  1},
-        {0x80000000, 31}
+		{0x00000003,  0},
+		{0x00000002,  1}
 	};
-    
+
 	int test()
 	{
 		int Error(0);
@@ -223,10 +214,26 @@ namespace findLSB
 			Error += DataI32[i].Return == Result ? 0 : 1;
 			assert(!Error);
 		}
-        
+
 		return Error;
 	}
 }//findLSB
+
+namespace usubBorrow
+{
+	int test()
+	{
+		int Error(0);
+		
+		glm::uint x = 16;
+		glm::uint y = 17;
+		glm::uint Borrow = 0;
+		glm::uint Result = glm::usubBorrow(x, y, Borrow);
+		
+		return Error;
+	}
+	
+}//namespace usubBorrow
 
 int main()
 {

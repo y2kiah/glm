@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2010-09-16
 // Updated : 2010-09-16
@@ -29,10 +29,10 @@ void test_data_equals_xyzw()
 {
     glm::simdVec4 subject(1.0f, 2.0f, 3.0f, 4.0f);
     bool result =
-        subject.Data.m128_f32[0] == subject.x &&
-        subject.Data.m128_f32[1] == subject.y &&
-        subject.Data.m128_f32[2] == subject.z &&
-        subject.Data.m128_f32[3] == subject.w;
+        subject.Data.m128_f32[0] == subject[0] &&
+        subject.Data.m128_f32[1] == subject[1] &&
+        subject.Data.m128_f32[2] == subject[2] &&
+        subject.Data.m128_f32[3] == subject[3];
 
     printf("Data == xyzw : %s\n", result ? "yes" : "no");
 }
@@ -337,12 +337,22 @@ int main()
 
 	int Error(0);
 
-	Error += perf_dp_ref();
-	Error += perf_dp();
+	{
+		Error += perf_dp_ref();
+		Error += perf_dp();
 
-	while(true);
+		while(true);
 
-	Error += do_all_tests();
+		Error += do_all_tests();
+	}
+
+	{
+		__m128 value = _mm_set1_ps(0.0f);
+		__m128 data = _mm_cmpeq_ps(value, value);
+		__m128 add0 = _mm_add_ps(data, data);
+
+		glm::simdVec4 GNI(add0);
+	}
 
 	return Error;
 }

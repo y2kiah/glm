@@ -7,11 +7,11 @@
 // File    : test/ilm/ilm_f32x4_dot.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
+#if GLM_ARCH != GLM_ARCH_PURE
+
 #include <glm/glm.hpp>
 #include <glm/ilm.hpp>
 #include <cstdio>
-
-
 
 int main()
 {
@@ -21,3 +21,11 @@ int main()
 	return Error;
 }
 
+#else
+
+int main()
+{
+	return 0;
+}
+
+#endif

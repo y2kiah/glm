@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -35,15 +35,14 @@
 /// <glm/gtx/simd_vec4.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_simd_vec4
-#define GLM_GTX_simd_vec4 GLM_VERSION
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
 
-#if(GLM_ARCH != GLM_ARCH_PURE)
+#if GLM_ARCH != GLM_ARCH_PURE
 
-#if(GLM_ARCH & GLM_ARCH_SSE2)
+#if GLM_ARCH & GLM_ARCH_SSE2
 #	include "../ilm/intrinsic_common.hpp"
 #	include "../ilm/intrinsic_geometric.hpp"
 #	include "../ilm/intrinsic_integer.hpp"
@@ -51,17 +50,35 @@
 #	error "GLM: GLM_GTX_simd_vec4 requires compiler support of SSE2 through intrinsics"
 #endif
 
-#if(defined(GLM_MESSAGES) && !defined(glm_ext))
+#if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
 #	pragma message("GLM: GLM_GTX_simd_vec4 extension included")
 #endif
 
-
 // Warning silencer for nameless struct/union.
-#if (GLM_COMPILER & GLM_COMPILER_VC)
-#   pragma warning(push)
-#   pragma warning(disable:4201)   // warning C4201: nonstandard extension used : nameless struct/union
+#if GLM_COMPILER & GLM_COMPILER_VC
+#	pragma warning(push)
+#	pragma warning(disable:4201)   // warning C4201: nonstandard extension used : nameless struct/union
 #endif
 
+namespace glm
+{
+	enum comp
+	{
+		X = 0,
+		R = 0,
+		S = 0,
+		Y = 1,
+		G = 1,
+		T = 1,
+		Z = 2,
+		B = 2,
+		P = 2,
+		W = 3,
+		A = 3,
+		Q = 3
+	};
+
+}//namespace glm
 
 namespace glm{
 namespace detail
@@ -77,7 +94,7 @@ namespace detail
 
 		typedef fvec4SIMD type;
 		typedef tvec4<bool, highp> bool_type;
-
+/*
 #ifdef GLM_SIMD_ENABLE_XYZW_UNION
 		union
 		{
@@ -85,8 +102,9 @@ namespace detail
 			struct {float x, y, z, w;};
 		};
 #else
+*/
 		__m128 Data;
-#endif
+//#endif
 
 		//////////////////////////////////////
 		// Implicit basic constructors
@@ -111,7 +129,7 @@ namespace detail
 			vec4 const & v);
 
 		////////////////////////////////////////
-		//// Convertion vector constructors
+		//// Conversion vector constructors
 
 		fvec4SIMD(vec2 const & v, float const & s1, float const & s2);
 		fvec4SIMD(float const & s1, vec2 const & v, float const & s2);
@@ -552,10 +570,8 @@ namespace detail
 
 #include "simd_vec4.inl"
 
-#if (GLM_COMPILER & GLM_COMPILER_VC)
+#if GLM_COMPILER & GLM_COMPILER_VC
 #	pragma warning(pop)
 #endif
 
-#endif//(GLM_ARCH != GLM_ARCH_PURE)
-
-#endif//GLM_GTX_simd_vec4
+#endif// GLM_ARCH != GLM_ARCH_PURE

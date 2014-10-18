@@ -26,12 +26,10 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_core_intrinsic_geometric
-#define glm_core_intrinsic_geometric
+#pragma once
+#include "../detail/setup.hpp"
 
-#include "../core/setup.hpp"
-
-#if(!(GLM_ARCH & GLM_ARCH_SSE2))
+#if !(GLM_ARCH & GLM_ARCH_SSE2)
 #	error "SSE2 instructions not supported or enabled"
 #else
 
@@ -73,4 +71,4 @@ namespace detail
 #include "intrinsic_geometric.inl"
 
 #endif//GLM_ARCH
-#endif//glm_core_intrinsic_geometric
+

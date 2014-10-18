@@ -35,13 +35,12 @@
 /// <glm/gtx/scalar_relational.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_scalar_relational
-#define GLM_GTX_scalar_relational GLM_VERSION
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
 
-#if(defined(GLM_MESSAGES) && !defined(glm_ext))
+#if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
 #	pragma message("GLM: GLM_GTX_extend extension included")
 #endif
 
@@ -56,5 +55,3 @@ namespace glm
 }//namespace glm
 
 #include "scalar_relational.inl"
-
-#endif//GLM_GTX_scalar_relational

@@ -26,10 +26,9 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_detail_intrinsic_common
-#define glm_detail_intrinsic_common
+#pragma once
 
-#include "../core/setup.hpp"
+#include "../detail/setup.hpp"
 
 #if(!(GLM_ARCH & GLM_ARCH_SSE2))
 #	error "SSE2 instructions not supported or enabled"
@@ -86,4 +85,3 @@ namespace detail
 #include "intrinsic_common.inl"
 
 #endif//GLM_ARCH
-#endif//glm_detail_intrinsic_common

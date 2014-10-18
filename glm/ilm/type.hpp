@@ -26,10 +26,13 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ILM_TYPE_INCLUDED
-#define ILM_TYPE_INCLUDED
+#pragma once
 
-#include "../core/setup.hpp"
+#include "../detail/setup.hpp"
+
+#if !(GLM_ARCH & GLM_ARCH_SSE2)
+#	error "SSE2 instructions not supported or enabled"
+#else
 
 namespace ilm
 {
@@ -297,4 +300,4 @@ namespace ilm
 
 #include "type.inl"
 
-#endif//ILM_TYPE_INCLUDED
+#endif//GLM_ARCH

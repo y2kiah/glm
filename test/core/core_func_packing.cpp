@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2011-01-15
 // Updated : 2011-09-13
@@ -7,10 +7,10 @@
 // File    : test/core/func_packing.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <glm/glm.hpp>
-#include <glm/gtc/half_float.hpp>
 #include <glm/gtc/type_precision.hpp>
 #include <glm/gtc/epsilon.hpp>
+#include <glm/vector_relational.hpp>
+#include <glm/packing.hpp>
 #include <vector>
 
 int test_packUnorm2x16()
@@ -42,12 +42,7 @@ int test_packUnorm2x16()
 int test_packSnorm2x16()
 {
 	int Error = 0;
-/*
-	std::vector<glm::hvec2> A;
-	A.push_back(glm::hvec2(glm::half( 1.0f), glm::half( 0.0f)));
-	A.push_back(glm::hvec2(glm::half(-0.5f), glm::half(-0.7f)));
-	A.push_back(glm::hvec2(glm::half(-0.1f), glm::half( 0.1f)));
-*/
+
 	std::vector<glm::vec2> A;
 	A.push_back(glm::vec2( 1.0f, 0.0f));
 	A.push_back(glm::vec2(-0.5f,-0.7f));

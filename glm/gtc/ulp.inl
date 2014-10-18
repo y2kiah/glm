@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -33,8 +33,10 @@
 /// is preserved.
 ///////////////////////////////////////////////////////////////////////////////////
 
+#include "../detail/type_int.hpp"
 #include <cmath>
 #include <cfloat>
+#include <limits>
 
 #if(GLM_COMPILER & GLM_COMPILER_VC)
 #	pragma warning(push)
@@ -192,50 +194,76 @@ namespace detail
 #	pragma warning(pop)
 #endif
 
-#if((GLM_COMPILER & GLM_COMPILER_VC) || ((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_PLATFORM & GLM_PLATFORM_WINDOWS)))
-#	define GLM_NEXT_AFTER_FLT(x, toward) glm::detail::nextafterf((x), (toward))
-#	define GLM_NEXT_AFTER_DBL(x, toward) _nextafter((x), (toward))
-#else
-#	define GLM_NEXT_AFTER_FLT(x, toward) nextafterf((x), (toward))
-#	define GLM_NEXT_AFTER_DBL(x, toward) nextafter((x), (toward))
-#endif
-
 namespace glm
 {
+	template <>
 	GLM_FUNC_QUALIFIER float next_float(float const & x)
 	{
-		return GLM_NEXT_AFTER_FLT(x, std::numeric_limits<float>::max());
+#		if((GLM_LANG & GLM_LANG_CXX11_FLAG) && !(GLM_PLATFORM & GLM_PLATFORM_ANDROID))
+			return std::nextafter(x, std::numeric_limits<float>::max());
+#		elif((GLM_COMPILER & GLM_COMPILER_VC) || ((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_PLATFORM & GLM_PLATFORM_WINDOWS)))
+			return detail::nextafterf(x, FLT_MAX);
+#		elif(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
+			return __builtin_nextafterf(x, FLT_MAX);
+#		else
+			return nextafterf(x, FLT_MAX);
+#		endif
 	}
 
+	template <>
 	GLM_FUNC_QUALIFIER double next_float(double const & x)
 	{
-		return GLM_NEXT_AFTER_DBL(x, std::numeric_limits<double>::max());
+#		if((GLM_LANG & GLM_LANG_CXX11_FLAG) && !(GLM_PLATFORM & GLM_PLATFORM_ANDROID))
+			return std::nextafter(x, std::numeric_limits<double>::max());
+#		elif((GLM_COMPILER & GLM_COMPILER_VC) || ((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_PLATFORM & GLM_PLATFORM_WINDOWS)))
+			return detail::nextafter(x, std::numeric_limits<double>::max());
+#		elif(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
+			return __builtin_nextafter(x, FLT_MAX);
+#		else
+			return nextafter(x, DBL_MAX);
+#		endif
 	}
 
-	template<typename T, template<typename> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T> next_float(vecType<T> const & x)
+	template<typename T, precision P, template<typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> next_float(vecType<T, P> const & x)
 	{
-		vecType<T> Result;
-		for(std::size_t i = 0; i < Result.length(); ++i)
+		vecType<T, P> Result(vecType<T, P>::_null);
+		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
 			Result[i] = next_float(x[i]);
 		return Result;
 	}
 
 	GLM_FUNC_QUALIFIER float prev_float(float const & x)
 	{
-		return GLM_NEXT_AFTER_FLT(x, std::numeric_limits<float>::min());
+#		if((GLM_LANG & GLM_LANG_CXX11_FLAG) && !(GLM_PLATFORM & GLM_PLATFORM_ANDROID))
+			return std::nextafter(x, std::numeric_limits<float>::min());
+#		elif((GLM_COMPILER & GLM_COMPILER_VC) || ((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_PLATFORM & GLM_PLATFORM_WINDOWS)))
+			return detail::nextafterf(x, FLT_MIN);
+#		elif(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
+			return __builtin_nextafterf(x, FLT_MIN);
+#		else
+			return nextafterf(x, FLT_MIN);
+#		endif
 	}
 
 	GLM_FUNC_QUALIFIER double prev_float(double const & x)
 	{
-		return GLM_NEXT_AFTER_DBL(x, std::numeric_limits<double>::min());
+#		if((GLM_LANG & GLM_LANG_CXX11_FLAG) && !(GLM_PLATFORM & GLM_PLATFORM_ANDROID))
+			return std::nextafter(x, std::numeric_limits<double>::min());
+#		elif((GLM_COMPILER & GLM_COMPILER_VC) || ((GLM_COMPILER & GLM_COMPILER_INTEL) && (GLM_PLATFORM & GLM_PLATFORM_WINDOWS)))
+			return _nextafter(x, DBL_MIN);
+#		elif(GLM_PLATFORM & GLM_PLATFORM_ANDROID)
+			return __builtin_nextafter(x, DBL_MIN);
+#		else
+			return nextafter(x, DBL_MIN);
+#		endif
 	}
 
-	template<typename T, template<typename> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T> prev_float(vecType<T> const & x)
+	template<typename T, precision P, template<typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> prev_float(vecType<T, P> const & x)
 	{
-		vecType<T> Result;
-		for(std::size_t i = 0; i < Result.length(); ++i)
+		vecType<T, P> Result(vecType<T, P>::_null);
+		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
 			Result[i] = prev_float(x[i]);
 		return Result;
 	}
@@ -244,16 +272,16 @@ namespace glm
 	GLM_FUNC_QUALIFIER T next_float(T const & x, uint const & ulps)
 	{
 		T temp = x;
-		for(std::size_t i = 0; i < ulps; ++i)
+		for(uint i = 0; i < ulps; ++i)
 			temp = next_float(temp);
 		return temp;
 	}
 
-	template<typename T, template<typename> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T> next_float(vecType<T> const & x, vecType<uint> const & ulps)
+	template<typename T, precision P, template<typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> next_float(vecType<T, P> const & x, vecType<uint, P> const & ulps)
 	{
-		vecType<T> Result;
-		for(std::size_t i = 0; i < Result.length(); ++i)
+		vecType<T, P> Result(vecType<T, P>::_null);
+		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
 			Result[i] = next_float(x[i], ulps[i]);
 		return Result;
 	}
@@ -262,16 +290,16 @@ namespace glm
 	GLM_FUNC_QUALIFIER T prev_float(T const & x, uint const & ulps)
 	{
 		T temp = x;
-		for(std::size_t i = 0; i < ulps; ++i)
+		for(uint i = 0; i < ulps; ++i)
 			temp = prev_float(temp);
 		return temp;
 	}
 
-	template<typename T, template<typename> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T> prev_float(vecType<T> const & x, vecType<uint> const & ulps)
+	template<typename T, precision P, template<typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> prev_float(vecType<T, P> const & x, vecType<uint, P> const & ulps)
 	{
-		vecType<T> Result;
-		for(std::size_t i = 0; i < Result.length(); ++i)
+		vecType<T, P> Result(vecType<T, P>::_null);
+		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
 			Result[i] = prev_float(x[i], ulps[i]);
 		return Result;
 	}
@@ -284,7 +312,7 @@ namespace glm
 		if(x < y)
 		{
 			T temp = x;
-			while(temp != y && ulp < std::numeric_limits<std::size_t>::max())
+			while(temp != y)// && ulp < std::numeric_limits<std::size_t>::max())
 			{
 				++ulp;
 				temp = next_float(temp);
@@ -293,7 +321,7 @@ namespace glm
 		else if(y < x)
 		{
 			T temp = y;
-			while(temp != x && ulp < std::numeric_limits<std::size_t>::max())
+			while(temp != x)// && ulp < std::numeric_limits<std::size_t>::max())
 			{
 				++ulp;
 				temp = next_float(temp);
@@ -307,11 +335,11 @@ namespace glm
 		return ulp;
 	}
 
-	template<typename T, template<typename> class vecType>
-	GLM_FUNC_QUALIFIER vecType<uint> float_distance(vecType<T> const & x, vecType<T> const & y)
+	template<typename T, precision P, template<typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<uint, P> float_distance(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		vecType<uint> Result;
-		for(std::size_t i = 0; i < Result.length(); ++i)
+		vecType<uint, P> Result(vecType<T, P>::_null);
+		for(detail::component_count_t i = 0; i < detail::component_count(Result); ++i)
 			Result[i] = float_distance(x[i], y[i]);
 		return Result;
 	}

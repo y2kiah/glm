@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2005-12-30
 // Updated : 2008-09-29
@@ -10,34 +10,39 @@
 namespace glm
 {
 	template <typename genType> 
-	GLM_FUNC_QUALIFIER typename genType::value_type angle
+	GLM_FUNC_QUALIFIER genType angle
 	(
 		genType const & x,
 		genType const & y
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
-		return acos(dot(x, y));
-#else
-		return degrees(acos(dot(x, y)));
-#endif
+		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'angle' only accept floating-point inputs");
+		return acos(clamp(dot(x, y), genType(-1), genType(1)));
+	}
+
+	template <typename T, precision P, template <typename, precision> class vecType> 
+	GLM_FUNC_QUALIFIER T angle
+	(
+		vecType<T, P> const & x,
+		vecType<T, P> const & y
+	)
+	{
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'angle' only accept floating-point inputs");
+		return acos(clamp(dot(x, y), T(-1), T(1)));
 	}
 
 	//! \todo epsilon is hard coded to 0.01
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER T orientedAngle
 	(
-		detail::tvec2<T, P> const & x,
-		detail::tvec2<T, P> const & y
+		tvec2<T, P> const & x,
+		tvec2<T, P> const & y
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
-		T const Angle(acos(dot(x, y)));
-#else
-		T const Angle(degrees(acos(dot(x, y))));
-#endif
-		detail::tvec2<T, P> const TransformedVector(glm::rotate(x, Angle));
-		if(all(epsilonEqual(y, TransformedVector, T(0.01))))
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'orientedAngle' only accept floating-point inputs");
+		T const Angle(acos(clamp(dot(x, y), T(-1), T(1))));
+
+		if(all(epsilonEqual(y, glm::rotate(x, Angle), T(0.0001))))
 			return Angle;
 		else
 			return -Angle;
@@ -46,20 +51,14 @@ namespace glm
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER T orientedAngle
 	(
-		detail::tvec3<T, P> const & x,
-		detail::tvec3<T, P> const & y,
-		detail::tvec3<T, P> const & ref
+		tvec3<T, P> const & x,
+		tvec3<T, P> const & y,
+		tvec3<T, P> const & ref
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
-		T const Angle(acos(dot(x, y)));
-#else
-		T const Angle(degrees(acos(dot(x, y))));
-#endif
+		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'orientedAngle' only accept floating-point inputs");
 
-		if(dot(ref, cross(x, y)) < T(0))
-			return -Angle;
-		else
-			return Angle;
+		T const Angle(acos(clamp(dot(x, y), T(-1), T(1))));
+		return mix(Angle, -Angle, dot(ref, cross(x, y)) < T(0));
 	}
 }//namespace glm

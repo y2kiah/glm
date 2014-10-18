@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // Created : 2010-09-16
 // Updated : 2010-09-16
@@ -7,13 +7,10 @@
 // File    : test/gtx/bit.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <emmintrin.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/type_precision.hpp>
 #include <glm/gtx/bit.hpp>
+#include <glm/gtc/type_precision.hpp>
 
-#if(GLM_ARCH != GLM_ARCH_PURE)
+#if GLM_ARCH != GLM_ARCH_PURE
 #	include <glm/ilm.hpp>
 #endif
 
@@ -28,96 +25,6 @@ enum result
 	ASSERT,
 	STATIC_ASSERT
 };
-
-namespace extractField
-{
-	template <typename genType, typename sizeType>
-	struct type
-	{
-		genType		Value;
-		sizeType	BitFirst;
-		sizeType	BitCount;
-		genType		Return;
-		result		Result;
-	};
-
-	typedef type<glm::uint64, glm::uint> typeU64;
-
-#if(((GLM_COMPILER & GLM_COMPILER_GCC) == GLM_COMPILER_GCC) && (GLM_COMPILER < GLM_COMPILER_GCC44))
-	typeU64 const Data64[] =
-	{
-		{0xffffffffffffffffLLU, 8, 0, 0x0000000000000000LLU, SUCCESS},
-		{0x0000000000000000LLU, 0,64, 0x0000000000000000LLU, SUCCESS},
-		{0xffffffffffffffffLLU, 0,64, 0xffffffffffffffffLLU, SUCCESS},
-		{0x0f0f0f0f0f0f0f0fLLU, 0,64, 0x0f0f0f0f0f0f0f0fLLU, SUCCESS},
-		{0x0000000000000000LLU, 8, 0, 0x0000000000000000LLU, SUCCESS},
-		{0x8000000000000000LLU,63, 1, 0x0000000000000001LLU, SUCCESS},
-		{0x7fffffffffffffffLLU,63, 1, 0x0000000000000000LLU, SUCCESS},
-		{0x0000000000000300LLU, 8, 8, 0x0000000000000003LLU, SUCCESS},
-		{0x000000000000ff00LLU, 8, 8, 0x00000000000000ffLLU, SUCCESS},
-		{0xfffffffffffffff0LLU, 0, 5, 0x0000000000000010LLU, SUCCESS},
-		{0x00000000000000ffLLU, 1, 3, 0x0000000000000007LLU, SUCCESS},
-		{0x00000000000000ffLLU, 0, 3, 0x0000000000000007LLU, SUCCESS},
-		{0x0000000000000000LLU, 0, 2, 0x0000000000000000LLU, SUCCESS},
-		{0xffffffffffffffffLLU, 0, 8, 0x00000000000000ffLLU, SUCCESS},
-		{0xffffffff00000000LLU,32,32, 0x00000000ffffffffLLU, SUCCESS},
-		{0xfffffffffffffff0LLU, 0, 8, 0x0000000000000000LLU, FAIL},
-		{0xffffffffffffffffLLU,32,32, 0x0000000000000000LLU, FAIL},
-		//{0xffffffffffffffffLLU,64, 1, 0x0000000000000000LLU, ASSERT}, // Throw an assert 
-		//{0xffffffffffffffffLLU, 0,65, 0x0000000000000000LLU, ASSERT}, // Throw an assert 
-		//{0xffffffffffffffffLLU,33,32, 0x0000000000000000LLU, ASSERT}, // Throw an assert 
-	};
-#else
-	typeU64 const Data64[] =
-	{
-		{0xffffffffffffffff, 8, 0, 0x0000000000000000, SUCCESS},
-		{0x0000000000000000, 0,64, 0x0000000000000000, SUCCESS},
-		{0xffffffffffffffff, 0,64, 0xffffffffffffffff, SUCCESS},
-		{0x0f0f0f0f0f0f0f0f, 0,64, 0x0f0f0f0f0f0f0f0f, SUCCESS},
-		{0x0000000000000000, 8, 0, 0x0000000000000000, SUCCESS},
-		{0x8000000000000000,63, 1, 0x0000000000000001, SUCCESS},
-		{0x7fffffffffffffff,63, 1, 0x0000000000000000, SUCCESS},
-		{0x0000000000000300, 8, 8, 0x0000000000000003, SUCCESS},
-		{0x000000000000ff00, 8, 8, 0x00000000000000ff, SUCCESS},
-		{0xfffffffffffffff0, 0, 5, 0x0000000000000010, SUCCESS},
-		{0x00000000000000ff, 1, 3, 0x0000000000000007, SUCCESS},
-		{0x00000000000000ff, 0, 3, 0x0000000000000007, SUCCESS},
-		{0x0000000000000000, 0, 2, 0x0000000000000000, SUCCESS},
-		{0xffffffffffffffff, 0, 8, 0x00000000000000ff, SUCCESS},
-		{0xffffffff00000000,32,32, 0x00000000ffffffff, SUCCESS},
-		{0xfffffffffffffff0, 0, 8, 0x0000000000000000, FAIL},
-		{0xffffffffffffffff,32,32, 0x0000000000000000, FAIL},
-		//{0xffffffffffffffff,64, 1, 0x0000000000000000, ASSERT}, // Throw an assert 
-		//{0xffffffffffffffff, 0,65, 0x0000000000000000, ASSERT}, // Throw an assert 
-		//{0xffffffffffffffff,33,32, 0x0000000000000000, ASSERT}, // Throw an assert 
-	};
-#endif
-
-	int test()
-	{
-		glm::uint32 count = sizeof(Data64) / sizeof(typeU64);
-		
-		for(glm::uint32 i = 0; i < count; ++i)
-		{
-			glm::uint64 Return = glm::extractField(
-				Data64[i].Value, 
-				Data64[i].BitFirst, 
-				Data64[i].BitCount);
-			
-			bool Compare = Data64[i].Return == Return;
-			
-			if(Data64[i].Result == SUCCESS && Compare)
-				continue;
-			else if(Data64[i].Result == FAIL && !Compare)
-				continue;
-			
-			std::cout << "glm::extractfield test fail on test " << i << std::endl;
-			return 1;
-		}
-		
-		return 0;
-	}
-}//extractField
 
 namespace bitRevert
 {
@@ -243,6 +150,7 @@ namespace bitfieldInterleave
 		return REG1 | (REG2 << 1);
 	}
 
+#if GLM_ARCH != GLM_ARCH_PURE
 	inline glm::uint64 sseBitfieldInterleave(glm::uint32 x, glm::uint32 y)
 	{
 		GLM_ALIGN(16) glm::uint32 const Array[4] = {x, 0, y, 0};
@@ -358,11 +266,12 @@ namespace bitfieldInterleave
 
 		return Result[0];
 	}
+#endif// GLM_ARCH != GLM_ARCH_PURE
 
 	int test()
 	{
-		glm::uint32 x_max = 1 << 13;
-		glm::uint32 y_max = 1 << 12;
+		glm::uint32 x_max = 1 << 11;
+		glm::uint32 y_max = 1 << 10;
 
 		// ALU
 		std::vector<glm::uint64> Data(x_max * y_max);
@@ -378,21 +287,22 @@ namespace bitfieldInterleave
 				glm::uint64 B = fastBitfieldInterleave(x, y);
 				glm::uint64 C = loopBitfieldInterleave(x, y);
 				glm::uint64 D = interleaveBitfieldInterleave(x, y);
-				glm::uint64 E = sseBitfieldInterleave(x, y);
-				glm::uint64 F = sseUnalignedBitfieldInterleave(x, y);
 
 				assert(A == B);
 				assert(A == C);
 				assert(A == D);
-				assert(A == E);
-				assert(A == F);
 
-#				if(GLM_ARCH != GLM_ARCH_PURE)
+#				if GLM_ARCH != GLM_ARCH_PURE
+					glm::uint64 E = sseBitfieldInterleave(x, y);
+					glm::uint64 F = sseUnalignedBitfieldInterleave(x, y);
+					assert(A == E);
+					assert(A == F);
+
 					__m128i G = glm::detail::_mm_bit_interleave_si128(_mm_set_epi32(0, y, 0, x));
 					glm::uint64 Result[2];
 					_mm_storeu_si128((__m128i*)Result, G);
 					assert(A == Result[0]);
-#				endif//(GLM_ARCH != GLM_ARCH_PURE)
+#				endif// GLM_ARCH != GLM_ARCH_PURE
 			}
 		}
 
@@ -457,6 +367,7 @@ namespace bitfieldInterleave
 			std::cout << "interleaveBitfieldInterleave Time " << Time << " clocks" << std::endl;
 		}
 
+#		if GLM_ARCH != GLM_ARCH_PURE
 		{
 			std::clock_t LastTime = std::clock();
 
@@ -478,6 +389,7 @@ namespace bitfieldInterleave
 
 			std::cout << "sseUnalignedBitfieldInterleave Time " << Time << " clocks" << std::endl;
 		}
+#		endif// GLM_ARCH != GLM_ARCH_PURE
 
 		{
 			std::clock_t LastTime = std::clock();
@@ -490,27 +402,24 @@ namespace bitfieldInterleave
 			std::cout << "glm::detail::bitfieldInterleave Time " << Time << " clocks" << std::endl;
 		}
 
-#		if(GLM_ARCH != GLM_ARCH_PURE)
+#		if GLM_ARCH != GLM_ARCH_PURE
 		{
 			// SIMD
-			glm::int32 simd_x_max = 1 << 13;
-			glm::int32 simd_y_max = 1 << 12;
-
 			std::vector<__m128i> SimdData(x_max * y_max);
 			std::vector<__m128i> SimdParam(x_max * y_max);
 			for(int i = 0; i < SimdParam.size(); ++i)
-				SimdParam[i] = _mm_set_epi32(i % simd_x_max, 0, i / simd_y_max, 0);
+				SimdParam[i] = _mm_set_epi32(i % x_max, 0, i / y_max, 0);
 
 			std::clock_t LastTime = std::clock();
 
-			for(std::size_t i = 0; i < Data.size(); ++i)
+			for(std::size_t i = 0; i < SimdData.size(); ++i)
 				SimdData[i] = glm::detail::_mm_bit_interleave_si128(SimdParam[i]);
 
 			std::clock_t Time = std::clock() - LastTime;
 
 			std::cout << "_mm_bit_interleave_si128 Time " << Time << " clocks" << std::endl;
 		}
-#		endif//(GLM_ARCH != GLM_ARCH_PURE)
+#		endif// GLM_ARCH != GLM_ARCH_PURE
 
 		return 0;
 	}
@@ -599,7 +508,6 @@ int main()
 	Error += ::bitfieldInterleave3::test();
 	Error += ::bitfieldInterleave4::test();
 	Error += ::bitfieldInterleave::test();
-	Error += ::extractField::test();
 	Error += ::bitRevert::test();
 
 	return Error;

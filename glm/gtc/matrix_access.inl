@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2013 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -31,15 +31,15 @@ namespace glm
 	template <typename genType>
 	GLM_FUNC_QUALIFIER genType row
 	(
-		genType const & m, 
-		typename genType::size_type const & index, 
+		genType const & m,
+		length_t const & index,
 		typename genType::row_type const & x
 	)
 	{
-		assert(index < m.col_size());
+		assert(index >= 0 && static_cast<detail::component_count_t>(index) < detail::component_count(m[0]));
 
 		genType Result = m;
-		for(typename genType::size_type i = 0; i < genType::row_size(); ++i)
+		for(detail::component_count_t i = 0; i < detail::component_count(m); ++i)
 			Result[i][index] = x[i];
 		return Result;
 	}
@@ -48,13 +48,13 @@ namespace glm
 	GLM_FUNC_QUALIFIER typename genType::row_type row
 	(
 		genType const & m,
-		typename genType::size_type const & index
+		length_t const & index
 	)
 	{
-		assert(index < m.col_size());
+		assert(index >= 0 && static_cast<detail::component_count_t>(index) < detail::component_count(m[0]));
 
 		typename genType::row_type Result;
-		for(typename genType::size_type i = 0; i < genType::row_size(); ++i)
+		for(detail::component_count_t i = 0; i < detail::component_count(m); ++i)
 			Result[i] = m[i][index];
 		return Result;
 	}
@@ -63,11 +63,11 @@ namespace glm
 	GLM_FUNC_QUALIFIER genType column
 	(
 		genType const & m,
-		typename genType::size_type const & index,
+		length_t const & index,
 		typename genType::col_type const & x
 	)
 	{
-		assert(index < m.row_size());
+		assert(index >= 0 && static_cast<detail::component_count_t>(index) < detail::component_count(m));
 
 		genType Result = m;
 		Result[index] = x;
@@ -78,10 +78,10 @@ namespace glm
 	GLM_FUNC_QUALIFIER typename genType::col_type column
 	(
 		genType const & m,
-		typename genType::size_type const & index
+		length_t const & index
 	)
 	{
-		assert(index < m.row_size());
+		assert(index >= 0 && static_cast<detail::component_count_t>(index) < detail::component_count(m));
 
 		return m[index];
 	}
