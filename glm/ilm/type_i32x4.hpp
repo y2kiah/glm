@@ -26,8 +26,7 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ILM_TYPE_I32X4_INCLUDED
-#define ILM_TYPE_I32X4_INCLUDED
+#pragma once
 
 #include "type.hpp"
 
@@ -37,6 +36,3 @@ namespace ilm
 }//namespace ilm
 
 #include "type_i32x4.inl"
-
-#endif//ILM_TYPE_I32X4_INCLUDED
-

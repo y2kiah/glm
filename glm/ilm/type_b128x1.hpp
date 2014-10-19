@@ -26,8 +26,7 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef ILM_TYPE_B128X1_INCLUDED
-#define ILM_TYPE_B128X1_INCLUDED
+#pragma once
 
 #include "type.hpp"
 
@@ -37,5 +36,3 @@ namespace ilm
 }//namespace ilm
 
 #include "type_b128x1.inl"
-
-#endif//ILM_TYPE_B128X1_INCLUDED
