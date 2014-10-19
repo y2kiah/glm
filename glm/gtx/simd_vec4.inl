@@ -195,7 +195,6 @@ GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::swizzle()
 	return *this;
 }
 
-// operator+
 GLM_FUNC_QUALIFIER fvec4SIMD operator+ (fvec4SIMD const & v, float s)
 {
 	return fvec4SIMD(_mm_add_ps(v.Data, _mm_set1_ps(s)));
@@ -211,7 +210,6 @@ GLM_FUNC_QUALIFIER fvec4SIMD operator+ (fvec4SIMD const & v1, fvec4SIMD const & 
 	return fvec4SIMD(_mm_add_ps(v1.Data, v2.Data));
 }
 
-//operator-
 GLM_FUNC_QUALIFIER fvec4SIMD operator- (fvec4SIMD const & v, float s)
 {
 	return fvec4SIMD(_mm_sub_ps(v.Data, _mm_set1_ps(s)));
@@ -227,7 +225,6 @@ GLM_FUNC_QUALIFIER fvec4SIMD operator- (fvec4SIMD const & v1, fvec4SIMD const & 
 	return fvec4SIMD(_mm_sub_ps(v1.Data, v2.Data));
 }
 
-//operator*
 GLM_FUNC_QUALIFIER fvec4SIMD operator* (fvec4SIMD const & v, float s)
 {
 	__m128 par0 = v.Data;
@@ -247,7 +244,6 @@ GLM_FUNC_QUALIFIER fvec4SIMD operator* (fvec4SIMD const & v1, fvec4SIMD const & 
 	return fvec4SIMD(_mm_mul_ps(v1.Data, v2.Data));
 }
 
-//operator/
 GLM_FUNC_QUALIFIER fvec4SIMD operator/ (fvec4SIMD const & v, float s)
 {
 	__m128 par0 = v.Data;
@@ -282,13 +278,9 @@ GLM_FUNC_QUALIFIER fvec4SIMD operator-- (fvec4SIMD const & v, int)
 {
 	return fvec4SIMD(_mm_sub_ps(v.Data, glm::detail::one));
 }
-
 }//namespace detail
 
-GLM_FUNC_QUALIFIER vec4 vec4_cast
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER vec4 vec4_cast(detail::fvec4SIMD const & x)
 {
 	GLM_ALIGN(16) vec4 Result;
 	_mm_store_ps(&Result[0], x.Data);
@@ -300,36 +292,24 @@ GLM_FUNC_QUALIFIER vec4 vec4_cast
 //{
 //  return max(-a, a);
 //}
-GLM_FUNC_QUALIFIER detail::fvec4SIMD abs
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD abs(detail::fvec4SIMD const & x)
 {
 	return detail::sse_abs_ps(x.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD sign
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD sign(detail::fvec4SIMD const & x)
 {
 	return detail::sse_sgn_ps(x.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD floor
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD floor(detail::fvec4SIMD const & x)
 {
 	return detail::sse_flr_ps(x.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD trunc
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD trunc(detail::fvec4SIMD const & x)
 {
-    //return x < 0 ? -floor(-x) : floor(x);
+	//return x < 0 ? -floor(-x) : floor(x);
 
 	__m128 Flr0 = detail::sse_flr_ps(_mm_sub_ps(_mm_setzero_ps(), x.Data));
 	__m128 Sub0 = _mm_sub_ps(Flr0, x.Data);
@@ -344,10 +324,7 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD trunc
 	return _mm_or_ps(And0, And1);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD round
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD round(detail::fvec4SIMD const & x)
 {
 	return detail::sse_rnd_ps(x.Data);
 }
@@ -360,36 +337,22 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD round
 
 //}
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD ceil
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD ceil(detail::fvec4SIMD const & x)
 {
 	return detail::sse_ceil_ps(x.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD fract
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD fract(detail::fvec4SIMD const & x)
 {
 	return detail::sse_frc_ps(x.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD mod
-(
-	detail::fvec4SIMD const & x, 
-	detail::fvec4SIMD const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD mod(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y)
 {
 	return detail::sse_mod_ps(x.Data, y.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD mod
-(
-	detail::fvec4SIMD const & x, 
-	float const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD mod(detail::fvec4SIMD const & x, float const & y)
 {
 	return detail::sse_mod_ps(x.Data, _mm_set1_ps(y));
 }
@@ -403,79 +366,44 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD mod
 
 //}
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD min
-(
-	detail::fvec4SIMD const & x, 
-	detail::fvec4SIMD const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD min(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y)
 {
 	return _mm_min_ps(x.Data, y.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD min
-(
-	detail::fvec4SIMD const & x, 
-	float const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD min(detail::fvec4SIMD const & x, float const & y)
 {
 	return _mm_min_ps(x.Data, _mm_set1_ps(y));
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD max
-(
-	detail::fvec4SIMD const & x, 
-	detail::fvec4SIMD const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD max(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y)
 {
 	return _mm_max_ps(x.Data, y.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD max
-(
-	detail::fvec4SIMD const & x, 
-	float const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD max(detail::fvec4SIMD const & x, float const & y)
 {
 	return _mm_max_ps(x.Data, _mm_set1_ps(y));
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD clamp
-(
-	detail::fvec4SIMD const & x, 
-	detail::fvec4SIMD const & minVal, 
-	detail::fvec4SIMD const & maxVal
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD clamp(detail::fvec4SIMD const & x, detail::fvec4SIMD const & minVal, detail::fvec4SIMD const & maxVal)
 {
 	return detail::sse_clp_ps(x.Data, minVal.Data, maxVal.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD clamp
-(
-	detail::fvec4SIMD const & x, 
-	float const & minVal, 
-	float const & maxVal
-) 
+GLM_FUNC_QUALIFIER detail::fvec4SIMD clamp(detail::fvec4SIMD const & x, float const & minVal, float const & maxVal) 
 {
 	return detail::sse_clp_ps(x.Data, _mm_set1_ps(minVal), _mm_set1_ps(maxVal));
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD mix
-(
-	detail::fvec4SIMD const & x, 
-	detail::fvec4SIMD const & y, 
-	detail::fvec4SIMD const & a
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD mix(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y, detail::fvec4SIMD const & a)
 {
 	__m128 Sub0 = _mm_sub_ps(y.Data, x.Data);
 	__m128 Mul0 = _mm_mul_ps(a.Data, Sub0);
 	return _mm_add_ps(x.Data, Mul0);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD step
-(
-	detail::fvec4SIMD const & edge, 
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD step(detail::fvec4SIMD const & edge, detail::fvec4SIMD const & x)
 {
 	__m128 cmp0 = _mm_cmpngt_ps(x.Data, edge.Data);
 	return _mm_max_ps(_mm_min_ps(cmp0, _mm_setzero_ps()), detail::one);
@@ -491,22 +419,12 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD step
 	return _mm_max_ps(_mm_min_ps(cmp0, _mm_setzero_ps()), detail::one);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD smoothstep
-(
-	detail::fvec4SIMD const & edge0, 
-	detail::fvec4SIMD const & edge1, 
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD smoothstep(detail::fvec4SIMD const & edge0, detail::fvec4SIMD const & edge1, detail::fvec4SIMD const & x)
 {
 	return detail::sse_ssp_ps(edge0.Data, edge1.Data, x.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD smoothstep
-(
-	float const & edge0, 
-	float const & edge1, 
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD smoothstep(float const & edge0, float const & edge1, detail::fvec4SIMD const & x)
 {
 	return detail::sse_ssp_ps(_mm_set1_ps(edge0), _mm_set1_ps(edge1), x.Data);
 }
@@ -537,20 +455,12 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD smoothstep
 
 //}
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD fma
-(
-	detail::fvec4SIMD const & a, 
-	detail::fvec4SIMD const & b, 
-	detail::fvec4SIMD const & c
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD fma(detail::fvec4SIMD const & a, detail::fvec4SIMD const & b, detail::fvec4SIMD const & c)
 {
 	return _mm_add_ps(_mm_mul_ps(a.Data, b.Data), c.Data);
 }
 
-GLM_FUNC_QUALIFIER float length
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER float length(detail::fvec4SIMD const & x)
 {
 	detail::fvec4SIMD dot0 = detail::sse_dot_ss(x.Data, x.Data);
 	detail::fvec4SIMD sqt0 = sqrt(dot0);
@@ -559,10 +469,7 @@ GLM_FUNC_QUALIFIER float length
 	return Result;
 }
 
-GLM_FUNC_QUALIFIER float fastLength
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER float fastLength(detail::fvec4SIMD const & x)
 {
 	detail::fvec4SIMD dot0 = detail::sse_dot_ss(x.Data, x.Data);
 	detail::fvec4SIMD sqt0 = fastSqrt(dot0);
@@ -571,10 +478,7 @@ GLM_FUNC_QUALIFIER float fastLength
 	return Result;
 }
 
-GLM_FUNC_QUALIFIER float niceLength
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER float niceLength(detail::fvec4SIMD const & x)
 {
 	detail::fvec4SIMD dot0 = detail::sse_dot_ss(x.Data, x.Data);
 	detail::fvec4SIMD sqt0 = niceSqrt(dot0);
@@ -583,89 +487,57 @@ GLM_FUNC_QUALIFIER float niceLength
 	return Result;
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD length4
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD length4(detail::fvec4SIMD const & x)
 {
 	return sqrt(dot4(x, x));
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD fastLength4
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD fastLength4(detail::fvec4SIMD const & x)
 {
 	return fastSqrt(dot4(x, x));
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD niceLength4
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD niceLength4(detail::fvec4SIMD const & x)
 {
 	return niceSqrt(dot4(x, x));
 }
 
-GLM_FUNC_QUALIFIER float distance
-(
-	detail::fvec4SIMD const & p0,
-	detail::fvec4SIMD const & p1
-)
+GLM_FUNC_QUALIFIER float distance(detail::fvec4SIMD const & p0,	detail::fvec4SIMD const & p1)
 {
 	float Result = 0;
 	_mm_store_ss(&Result, detail::sse_dst_ps(p0.Data, p1.Data));
 	return Result;
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD distance4
-(
-	detail::fvec4SIMD const & p0,
-	detail::fvec4SIMD const & p1
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD distance4(detail::fvec4SIMD const & p0, detail::fvec4SIMD const & p1)
 {
 	return detail::sse_dst_ps(p0.Data, p1.Data);
 }
 
-GLM_FUNC_QUALIFIER float dot
-(
-	detail::fvec4SIMD const & x,
-	detail::fvec4SIMD const & y
-)
+GLM_FUNC_QUALIFIER float dot(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y)
 {
-    float Result;
+	float Result;
 
 #if GLM_ARCH >= GLM_ARCH_SSE4
-    _mm_store_ss(&Result, _mm_dp_ps(x.Data, y.Data, 0xf1));
+	_mm_store_ss(&Result, _mm_dp_ps(x.Data, y.Data, 0xf1));
 #else
 	_mm_store_ss(&Result, detail::sse_dot_ss(x.Data, y.Data));
 #endif
 
-    return Result;
+	return Result;
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD dot4
-(
-	detail::fvec4SIMD const & x,
-	detail::fvec4SIMD const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD dot4(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y)
 {
 	return detail::sse_dot_ps(x.Data, y.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD cross
-(
-	detail::fvec4SIMD const & x,
-	detail::fvec4SIMD const & y
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD cross(detail::fvec4SIMD const & x, detail::fvec4SIMD const & y)
 {
 	return detail::sse_xpd_ps(x.Data, y.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD normalize
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD normalize(detail::fvec4SIMD const & x)
 {
 	__m128 dot0 = detail::sse_dot_ps(x.Data, x.Data);
 	__m128 isr0 = inversesqrt(detail::fvec4SIMD(dot0)).Data;
@@ -673,10 +545,7 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD normalize
 	return mul0;
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD fastNormalize
-(
-	detail::fvec4SIMD const & x
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD fastNormalize(detail::fvec4SIMD const & x)
 {
 	__m128 dot0 = detail::sse_dot_ps(x.Data, x.Data);
 	__m128 isr0 = fastInversesqrt(dot0).Data;
@@ -684,31 +553,17 @@ GLM_FUNC_QUALIFIER detail::fvec4SIMD fastNormalize
 	return mul0;
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD faceforward
-(
-	detail::fvec4SIMD const & N,
-	detail::fvec4SIMD const & I,
-	detail::fvec4SIMD const & Nref
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD faceforward(detail::fvec4SIMD const & N, detail::fvec4SIMD const & I, detail::fvec4SIMD const & Nref)
 {
 	return detail::sse_ffd_ps(N.Data, I.Data, Nref.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD reflect
-(
-	detail::fvec4SIMD const & I,
-	detail::fvec4SIMD const & N
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD reflect(detail::fvec4SIMD const & I, detail::fvec4SIMD const & N)
 {
 	return detail::sse_rfe_ps(I.Data, N.Data);
 }
 
-GLM_FUNC_QUALIFIER detail::fvec4SIMD refract
-(
-	detail::fvec4SIMD const & I,
-	detail::fvec4SIMD const & N,
-	float const & eta
-)
+GLM_FUNC_QUALIFIER detail::fvec4SIMD refract(detail::fvec4SIMD const & I, detail::fvec4SIMD const & N, float const & eta)
 {
 	return detail::sse_rfa_ps(I.Data, N.Data, _mm_set1_ps(eta));
 }
