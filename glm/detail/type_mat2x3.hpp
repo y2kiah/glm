@@ -40,7 +40,6 @@ namespace glm
 	template <typename T, precision P>
 	struct tmat2x3
 	{
-		enum ctor{_null};
 		typedef T value_type;
 		typedef std::size_t size_type;
 		typedef tvec3<T, P> col_type;
@@ -55,9 +54,10 @@ namespace glm
 #		endif//GLM_FORCE_SIZE_FUNC
 
 	private:
-		// Data 
+		/// @cond DETAIL 
 		col_type value[2];
-
+		/// @endcond
+		
 	public:
 		// Constructors
 		GLM_FUNC_DECL tmat2x3();
@@ -65,10 +65,8 @@ namespace glm
 		template <precision Q>
 		GLM_FUNC_DECL tmat2x3(tmat2x3<T, Q> const & m);
 
-		GLM_FUNC_DECL explicit tmat2x3(
-			ctor);
-		GLM_FUNC_DECL explicit tmat2x3(
-			T const & s);
+		GLM_FUNC_DECL explicit tmat2x3(ctor);
+		GLM_FUNC_DECL explicit tmat2x3(T const & s);
 		GLM_FUNC_DECL tmat2x3(
 			T const & x0, T const & y0, T const & z0,
 			T const & x1, T const & y1, T const & z1);

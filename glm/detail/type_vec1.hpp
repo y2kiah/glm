@@ -47,8 +47,6 @@ namespace glm
 		//////////////////////////////////////
 		// Implementation detail
 
-		enum ctor{_null};
-
 		typedef tvec1<T, P> type;
 		typedef tvec1<bool, P> bool_type;
 		typedef T value_type;
@@ -144,10 +142,10 @@ namespace glm
 		//////////////////////////////////////
 		// Unary arithmetic operators
 
-		GLM_FUNC_DECL tvec1<T, P> & operator= (tvec1<T, P> const & v);
+		GLM_FUNC_DECL tvec1<T, P> & operator=(tvec1<T, P> const & v);
 
 		template <typename U> 
-		GLM_FUNC_DECL tvec1<T, P> & operator= (tvec1<U, P> const & v);
+		GLM_FUNC_DECL tvec1<T, P> & operator=(tvec1<U, P> const & v);
 		template <typename U> 
 		GLM_FUNC_DECL tvec1<T, P> & operator+=(U const & s);
 		template <typename U> 

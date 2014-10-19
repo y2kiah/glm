@@ -19,34 +19,33 @@ struct mask
 //////////////////////////////////////
 // Implicit basic constructors
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD() :
-#ifndef GLM_SIMD_NO_DEFAULT_INIT
-	Data(_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f))
-#endif
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD()
+#	ifdef GLM_FORCE_NO_CTOR_INIT
+		: Data(_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f))
+#	endif
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(__m128 const & Data) :
-	Data(Data)
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(__m128 const & Data)
+	: Data(Data)
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(fvec4SIMD const & v) :
-	Data(v.Data)
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(fvec4SIMD const & v)
+	: Data(v.Data)
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec4 const & v) :
-	Data(_mm_set_ps(v.w, v.z, v.y, v.x))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec4 const & v)
+	: Data(_mm_set_ps(v.w, v.z, v.y, v.x))
 {}
 
 //////////////////////////////////////
 // Explicit basic constructors
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s) :
-	Data(_mm_set1_ps(s))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s)
+	: Data(_mm_set1_ps(s))
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & x, float const & y, float const & z, float const & w) :
-//		Data(_mm_setr_ps(x, y, z, w))
-	Data(_mm_set_ps(w, z, y, x))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & x, float const & y, float const & z, float const & w)
+	: Data(_mm_set_ps(w, z, y, x))
 {}
 /*
 GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const v[4]) :
@@ -61,28 +60,28 @@ GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const v[4]) :
 //////////////////////////////////////
 // Conversion vector constructors
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec2 const & v, float const & s1, float const & s2) :
-	Data(_mm_set_ps(s2, s1, v.y, v.x))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec2 const & v, float const & s1, float const & s2)
+	: Data(_mm_set_ps(s2, s1, v.y, v.x))
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s1, vec2 const & v, float const & s2) :
-	Data(_mm_set_ps(s2, v.y, v.x, s1))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s1, vec2 const & v, float const & s2)
+	: Data(_mm_set_ps(s2, v.y, v.x, s1))
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s1, float const & s2, vec2 const & v) :
-	Data(_mm_set_ps(v.y, v.x, s2, s1))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s1, float const & s2, vec2 const & v)
+	: Data(_mm_set_ps(v.y, v.x, s2, s1))
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec3 const & v, float const & s) :
-	Data(_mm_set_ps(s, v.z, v.y, v.x))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec3 const & v, float const & s)
+	: Data(_mm_set_ps(s, v.z, v.y, v.x))
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s, vec3 const & v) :
-	Data(_mm_set_ps(v.z, v.y, v.x, s))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(float const & s, vec3 const & v)
+	: Data(_mm_set_ps(v.z, v.y, v.x, s))
 {}
 
-GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec2 const & v1, vec2 const & v2) :
-	Data(_mm_set_ps(v2.y, v2.x, v1.y, v1.x))
+GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(vec2 const & v1, vec2 const & v2)
+	: Data(_mm_set_ps(v2.y, v2.x, v1.y, v1.x))
 {}
 
 //GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(ivec4SIMD const & v) :
