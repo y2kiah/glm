@@ -7,14 +7,87 @@
 // File    : test/core/func_common.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-//#include <boost/array.hpp>
-//#include <boost/date_time/posix_time/posix_time.hpp>
-//#include <boost/thread/thread.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtc/vec1.hpp>
+#include <glm/gtc/random.hpp>
+#include <vector>
 #include <cstdio>
 #include <cmath>
+#include <ctime>
+
+int test_floor()
+{
+	int Error(0);
+
+	{
+		float A(1.1f);
+		float B = glm::floor(A);
+	}
+
+	{
+		double A(1.1f);
+		double B = glm::floor(A);
+	}
+
+	{
+		glm::vec1 A(1.1f);
+		glm::vec1 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::vec1(1.0), 0.0001f)) ? 0 : 1;
+	}
+
+	{
+		glm::dvec1 A(1.1f);
+		glm::dvec1 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::dvec1(1.0), 0.0001)) ? 0 : 1;
+	}
+
+	{
+		glm::vec2 A(1.1f);
+		glm::vec2 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::vec2(1.0), 0.0001f)) ? 0 : 1;
+	}
+
+	{
+		glm::dvec2 A(1.1f);
+		glm::dvec2 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::dvec2(1.0), 0.0001)) ? 0 : 1;
+	}
+
+	{
+		glm::vec3 A(1.1f);
+		glm::vec3 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::vec3(1.0), 0.0001f)) ? 0 : 1;
+	}
+
+	{
+		glm::dvec3 A(1.1f);
+		glm::dvec3 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::dvec3(1.0), 0.0001)) ? 0 : 1;
+	}
+
+	{
+		glm::vec4 A(1.1f);
+		glm::vec4 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::vec4(1.0), 0.0001f)) ? 0 : 1;
+	}
+
+	{
+		glm::dvec4 A(1.1f);
+		glm::dvec4 B = glm::floor(A);
+
+		Error += glm::all(glm::epsilonEqual(B, glm::dvec4(1.0), 0.0001)) ? 0 : 1;
+	}
+
+	return Error;
+}
 
 int test_modf()
 {
@@ -445,23 +518,6 @@ int test_round()
 		Error += F == 2.0f ? 0 : 1;
 		float G = glm::round(1.9f);
 		Error += G == 2.0f ? 0 : 1;
-
-#if GLM_LANG >= GLM_LANG_CXX11
-		float A1 = glm::round(0.0f);
-		Error += A1 == A ? 0 : 1;
-		float B1 = glm::round(0.5f);
-		Error += B1 == B ? 0 : 1;
-		float C1 = glm::round(1.0f);
-		Error += C1 == C ? 0 : 1;
-		float D1 = glm::round(0.1f);
-		Error += D1 == D ? 0 : 1;
-		float E1 = glm::round(0.9f);
-		Error += E1 == E ? 0 : 1;
-		float F1 = glm::round(1.5f);
-		Error += F == F ? 0 : 1;
-		float G1 = glm::round(1.9f);
-		Error += G1 == G ? 0 : 1;
-#endif // GLM_LANG >= GLM_CXX0X
 	}
 	
 	{
@@ -489,68 +545,70 @@ int test_roundEven()
 	int Error = 0;
 
 	{
-		float A = glm::roundEven(-1.5f);
-		Error += glm::epsilonEqual(A, -2.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
-	{
-		float A = glm::roundEven(1.5f);
-		Error += glm::epsilonEqual(A, 2.0f, 0.0001f) ? 0 : 1;
+		float A1 = glm::roundEven(-1.5f);
+		Error += glm::epsilonEqual(A1, -2.0f, 0.0001f) ? 0 : 1;
+
+		float A2 = glm::roundEven(1.5f);
+		Error += glm::epsilonEqual(A2, 2.0f, 0.0001f) ? 0 : 1;
+
+		float A5 = glm::roundEven(-2.5f);
+		Error += glm::epsilonEqual(A5, -2.0f, 0.0001f) ? 0 : 1;
+
+		float A6 = glm::roundEven(2.5f);
+		Error += glm::epsilonEqual(A6, 2.0f, 0.0001f) ? 0 : 1;
+
+		float A3 = glm::roundEven(-3.5f);
+		Error += glm::epsilonEqual(A3, -4.0f, 0.0001f) ? 0 : 1;
+
+		float A4 = glm::roundEven(3.5f);
+		Error += glm::epsilonEqual(A4, 4.0f, 0.0001f) ? 0 : 1;
+
+		float C7 = glm::roundEven(-4.5f);
+		Error += glm::epsilonEqual(C7, -4.0f, 0.0001f) ? 0 : 1;
+
+		float C8 = glm::roundEven(4.5f);
+		Error += glm::epsilonEqual(C8, 4.0f, 0.0001f) ? 0 : 1;
+
+		float C1 = glm::roundEven(-5.5f);
+		Error += glm::epsilonEqual(C1, -6.0f, 0.0001f) ? 0 : 1;
+
+		float C2 = glm::roundEven(5.5f);
+		Error += glm::epsilonEqual(C2, 6.0f, 0.0001f) ? 0 : 1;
+
+		float C3 = glm::roundEven(-6.5f);
+		Error += glm::epsilonEqual(C3, -6.0f, 0.0001f) ? 0 : 1;
+
+		float C4 = glm::roundEven(6.5f);
+		Error += glm::epsilonEqual(C4, 6.0f, 0.0001f) ? 0 : 1;
+
+		float C5 = glm::roundEven(-7.5f);
+		Error += glm::epsilonEqual(C5, -8.0f, 0.0001f) ? 0 : 1;
+
+		float C6 = glm::roundEven(7.5f);
+		Error += glm::epsilonEqual(C6, 8.0f, 0.0001f) ? 0 : 1;
+
 		Error += 0;
 	}
 
 	{
-		float A = glm::roundEven(-3.5f);
-		Error += glm::epsilonEqual(A, -4.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
-	{
-		float A = glm::roundEven(3.5f);
-		Error += glm::epsilonEqual(A, 4.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
+		float A7 = glm::roundEven(-2.4f);
+		Error += glm::epsilonEqual(A7, -2.0f, 0.0001f) ? 0 : 1;
 
-	{
-		float A = glm::roundEven(-2.5f);
-		Error += glm::epsilonEqual(A, -2.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
-	{
-		float A = glm::roundEven(2.5f);
-		Error += glm::epsilonEqual(A, 2.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
+		float A8 = glm::roundEven(2.4f);
+		Error += glm::epsilonEqual(A8, 2.0f, 0.0001f) ? 0 : 1;
 
-	{
-		float A = glm::roundEven(-2.4f);
-		Error += glm::epsilonEqual(A, -2.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
-	{
-		float A = glm::roundEven(2.4f);
-		Error += glm::epsilonEqual(A, 2.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
+		float B1 = glm::roundEven(-2.6f);
+		Error += glm::epsilonEqual(B1, -3.0f, 0.0001f) ? 0 : 1;
 
-	{
-		float A = glm::roundEven(-2.6f);
-		Error += glm::epsilonEqual(A, -3.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
-	{
-		float A = glm::roundEven(2.6f);
-		Error += glm::epsilonEqual(A, 3.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
+		float B2 = glm::roundEven(2.6f);
+		Error += glm::epsilonEqual(B2, 3.0f, 0.0001f) ? 0 : 1;
 
-	{
-		float A = glm::roundEven(-2.0f);
-		Error += glm::epsilonEqual(A, -2.0f, 0.0001f) ? 0 : 1;
-		Error += 0;
-	}
-	{
-		float A = glm::roundEven(2.0f);
-		Error += glm::epsilonEqual(A, 2.0f, 0.0001f) ? 0 : 1;
+		float B3 = glm::roundEven(-2.0f);
+		Error += glm::epsilonEqual(B3, -2.0f, 0.0001f) ? 0 : 1;
+
+		float B4 = glm::roundEven(2.0f);
+		Error += glm::epsilonEqual(B4, 2.0f, 0.0001f) ? 0 : 1;
+
 		Error += 0;
 	}
 
@@ -681,10 +739,287 @@ int test_isinf()
 	return Error;
 }
 
+namespace sign
+{
+	template <typename genFIType> 
+	GLM_FUNC_QUALIFIER genFIType sign_if(genFIType x)
+	{
+		GLM_STATIC_ASSERT(
+			std::numeric_limits<genFIType>::is_iec559 ||
+			(std::numeric_limits<genFIType>::is_signed && std::numeric_limits<genFIType>::is_integer), "'sign' only accept signed inputs");
+
+		genFIType result;
+		if(x > genFIType(0))
+			result = genFIType(1);
+		else if(x < genFIType(0))
+			result = genFIType(-1);
+		else
+			result = genFIType(0);
+		return result;
+	}
+
+	template <typename genFIType> 
+	GLM_FUNC_QUALIFIER genFIType sign_alu1(genFIType x)
+	{
+		GLM_STATIC_ASSERT(
+			std::numeric_limits<genFIType>::is_signed && std::numeric_limits<genFIType>::is_integer, 
+			"'sign' only accept integer inputs");
+
+		return (x >> 31) | ((unsigned)-x >> 31);
+	}
+
+	template <typename genFIType> 
+	GLM_FUNC_QUALIFIER genFIType sign_alu2(genFIType x)
+	{
+		GLM_STATIC_ASSERT(
+			std::numeric_limits<genFIType>::is_signed && std::numeric_limits<genFIType>::is_integer, 
+			"'sign' only accept integer inputs");
+
+		return -((unsigned)x >> 31) | (-(unsigned)x >> 31);
+	}
+
+	template <typename genFIType> 
+	GLM_FUNC_QUALIFIER genFIType sign_sub(genFIType x)
+	{
+		GLM_STATIC_ASSERT(
+			std::numeric_limits<genFIType>::is_signed && std::numeric_limits<genFIType>::is_integer, 
+			"'sign' only accept integer inputs");
+
+		return ((unsigned)-x >> 31) - ((unsigned)x >> 31);
+	}
+
+	template <typename genFIType> 
+	GLM_FUNC_QUALIFIER genFIType sign_cmp(genFIType x)
+	{
+		GLM_STATIC_ASSERT(
+			std::numeric_limits<genFIType>::is_signed && std::numeric_limits<genFIType>::is_integer, 
+			"'sign' only accept integer inputs");
+
+		return (x > 0) - (x < 0);
+	}
+
+	template <typename genType>
+	struct type
+	{
+		genType		Value;
+		genType		Return;
+	};
+
+	int test_int32()
+	{
+		type<glm::int32> const Data[] =
+		{
+			{ 0, 0},
+			{ 1, 1},
+			{ 2, 1},
+			{ 3, 1},
+			{-1,-1},
+			{-2,-1},
+			{-3,-1}
+		};
+
+		int Error = 0;
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<glm::int32>); ++i)
+		{
+			glm::int32 Result = sign_cmp(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<glm::int32>); ++i)
+		{
+			glm::int32 Result = sign_if(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<glm::int32>); ++i)
+		{
+			glm::int32 Result = sign_alu1(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<glm::int32>); ++i)
+		{
+			glm::int32 Result = sign_alu2(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<glm::int32>); ++i)
+		{
+			glm::int32 Result = sign_sub(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		return Error;
+	}
+
+	int test()
+	{
+		int Error = 0;
+
+		Error += test_int32();
+
+		return Error;
+	}
+
+	int perf_rand()
+	{
+		int Error = 0;
+
+		std::size_t const Count = 1000000000;
+		std::vector<glm::int32> Input, Output;
+		Input.resize(Count);
+		Output.resize(Count);
+		for(std::size_t i = 0; i < Count; ++i)
+			Input[i] = static_cast<glm::int32>(glm::linearRand(-65536.f, 65536.f));
+
+		std::clock_t Timestamp0 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_cmp(Input[i]);
+
+		std::clock_t Timestamp1 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_if(Input[i]);
+
+		std::clock_t Timestamp2 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_alu1(Input[i]);
+
+		std::clock_t Timestamp3 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_alu2(Input[i]);
+
+		std::clock_t Timestamp4 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_sub(Input[i]);
+
+		std::clock_t Timestamp5 = std::clock();
+
+		std::printf("sign_cmp(rand) Time %d clocks\n", static_cast<unsigned int>(Timestamp1 - Timestamp0));
+		std::printf("sign_if(rand) Time %d clocks\n", static_cast<unsigned int>(Timestamp2 - Timestamp1));
+		std::printf("sign_alu1(rand) Time %d clocks\n", static_cast<unsigned int>(Timestamp3 - Timestamp2));
+		std::printf("sign_alu2(rand) Time %d clocks\n", static_cast<unsigned int>(Timestamp4 - Timestamp3));
+		std::printf("sign_sub(rand) Time %d clocks\n", static_cast<unsigned int>(Timestamp5 - Timestamp4));
+
+		return Error;
+	}
+
+	int perf_linear()
+	{
+		int Error = 0;
+
+		std::size_t const Count = 1000000000;
+		std::vector<glm::int32> Input, Output;
+		Input.resize(Count);
+		Output.resize(Count);
+		for(std::size_t i = 0; i < Count; ++i)
+			Input[i] = static_cast<glm::int32>(i);
+
+		std::clock_t Timestamp0 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_cmp(Input[i]);
+
+		std::clock_t Timestamp1 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_if(Input[i]);
+
+		std::clock_t Timestamp2 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_alu1(Input[i]);
+
+		std::clock_t Timestamp3 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_alu2(Input[i]);
+
+		std::clock_t Timestamp4 = std::clock();
+
+		for(std::size_t i = 0; i < Count; ++i)
+			Output[i] = sign_sub(Input[i]);
+
+		std::clock_t Timestamp5 = std::clock();
+
+		std::printf("sign_cmp(linear) Time %d clocks\n", static_cast<unsigned int>(Timestamp1 - Timestamp0));
+		std::printf("sign_if(linear) Time %d clocks\n", static_cast<unsigned int>(Timestamp2 - Timestamp1));
+		std::printf("sign_alu1(linear) Time %d clocks\n", static_cast<unsigned int>(Timestamp3 - Timestamp2));
+		std::printf("sign_alu2(linear) Time %d clocks\n", static_cast<unsigned int>(Timestamp4 - Timestamp3));
+		std::printf("sign_sub(linear) Time %d clocks\n", static_cast<unsigned int>(Timestamp5 - Timestamp4));
+
+		return Error;
+	}
+
+	int perf_linear_cal()
+	{
+		int Error = 0;
+
+		glm::uint32 const Count = 1000000000;
+
+		std::clock_t Timestamp0 = std::clock();
+		glm::int32 Sum = 0;
+
+		for(glm::int32 i = 1; i < Count; ++i)
+			Sum += sign_cmp(i);
+
+		std::clock_t Timestamp1 = std::clock();
+
+		for(glm::int32 i = 1; i < Count; ++i)
+			Sum += sign_if(i);
+
+		std::clock_t Timestamp2 = std::clock();
+
+		for(glm::int32 i = 1; i < Count; ++i)
+			Sum += sign_alu1(i);
+
+		std::clock_t Timestamp3 = std::clock();
+
+		for(glm::int32 i = 1; i < Count; ++i)
+			Sum += sign_alu2(i);
+
+		std::clock_t Timestamp4 = std::clock();
+
+		for(glm::int32 i = 1; i < Count; ++i)
+			Sum += sign_sub(i);
+
+		std::clock_t Timestamp5 = std::clock();
+
+		std::printf("Sum %d\n", static_cast<unsigned int>(Sum));
+
+		std::printf("sign_cmp(linear_cal) Time %d clocks\n", static_cast<unsigned int>(Timestamp1 - Timestamp0));
+		std::printf("sign_if(linear_cal) Time %d clocks\n", static_cast<unsigned int>(Timestamp2 - Timestamp1));
+		std::printf("sign_alu1(linear_cal) Time %d clocks\n", static_cast<unsigned int>(Timestamp3 - Timestamp2));
+		std::printf("sign_alu2(linear_cal) Time %d clocks\n", static_cast<unsigned int>(Timestamp4 - Timestamp3));
+		std::printf("sign_sub(linear_cal) Time %d clocks\n", static_cast<unsigned int>(Timestamp5 - Timestamp4));
+
+		return Error;
+	}
+
+	int perf()
+	{
+		int Error(0);
+
+		Error += perf_linear_cal();
+		Error += perf_linear();
+		Error += perf_rand();
+
+		return Error;
+	}
+}//namespace sign
+
 int main()
 {
 	int Error(0);
 
+	Error += sign::test();
+	Error += sign::perf();
+	Error += test_floor();
 	Error += test_modf();
 	Error += test_floatBitsToInt();
 	Error += test_floatBitsToUint();
@@ -695,7 +1030,7 @@ int main()
 	Error += test_round();
 	Error += test_roundEven();
 	Error += test_isnan();
-	//Error += test_isinf();
+	Error += test_isinf();
 
 	return Error;
 }

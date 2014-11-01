@@ -66,8 +66,8 @@ namespace detail
 #	endif
 }//namespace detail
 
-	template <typename T, precision P>
-	struct tvec4
+	template <typename T, precision P = defaultp>
+	GLM_ALIGNED_STRUCT(16) tvec4
 	{
 		//////////////////////////////////////
 		// Implementation detail
@@ -112,6 +112,7 @@ namespace detail
 #				endif//GLM_SWIZZLE
 			};
 #		else
+/*
 #			if GLM_HAS_UNRESTRICTED_UNIONS
 				union
 				{
@@ -125,11 +126,12 @@ namespace detail
 					};
 				};
 #			else
+*/
 				union { T x, r, s; };
 				union { T y, g, t; };
 				union { T z, b, p; };
 				union { T w, a, q; };
-#			endif
+//s#			endif
 		
 #			ifdef GLM_SWIZZLE
 				GLM_SWIZZLE_GEN_VEC_FROM_VEC4(T, P, tvec4, tvec2, tvec3, tvec4)

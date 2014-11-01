@@ -28,17 +28,16 @@
 
 #pragma once
 
-#include "../core/setup.hpp"
+#include "../detail/setup.hpp"
 
 #if(!(GLM_ARCH & GLM_ARCH_SSE2))
 #	error "SSE2 instructions not supported or enabled"
 #else
 
-namespace glm{
-namespace detail
+namespace glm
 {
-
-}//namespace detail
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_DECL fvec4SIMD equal(fvec4SIMD const & x, fvec4SIMD const & y);
 }//namespace glm
 
 #include "intrinsic_vector_relational.inl"

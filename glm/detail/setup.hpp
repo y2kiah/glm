@@ -31,7 +31,7 @@
 #include <cassert>
 #include <cstddef>
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Version
 
 #define GLM_VERSION					96
@@ -40,7 +40,7 @@
 #define GLM_VERSION_PATCH			6
 #define GLM_VERSION_REVISION		0
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Platform
 
 #define GLM_PLATFORM_UNKNOWN		0x00000000
@@ -104,7 +104,7 @@
 #	endif
 #endif//GLM_MESSAGE
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Compiler
 
 // User defines: GLM_FORCE_COMPILER_UNKNOWN
@@ -226,7 +226,7 @@
 
 // Clang
 #elif defined(__clang__)
-#	if GLM_PLATFORM & GLM_COMPILER_APPLE_CLANG
+#	if GLM_PLATFORM & GLM_PLATFORM_APPLE
 #		if __clang_major__ == 4 && __clang_minor__ == 0
 #			define GLM_COMPILER GLM_COMPILER_APPLE_CLANG40
 #		elif __clang_major__ == 4 && __clang_minor__ == 1
@@ -240,7 +240,7 @@
 #		elif __clang_major__ >= 6
 #			define GLM_COMPILER GLM_COMPILER_APPLE_CLANG60
 #		endif
-#	elif GLM_PLATFORM & GLM_COMPILER_LLVM
+#	else
 #		if __clang_major__ == 3 && __clang_minor__ == 0
 #			define GLM_COMPILER GLM_COMPILER_LLVM30
 #		elif __clang_major__ == 3 && __clang_minor__ == 1
@@ -308,8 +308,8 @@
 #	endif
 #endif//GLM_MESSAGE
 
-/////////////////
-// Build model //
+///////////////////////////////////////////////////////////////////////////////////
+// Build model
 
 #if defined(__arch64__) || defined(__LP64__) || defined(_M_X64) || defined(__ppc64__) || defined(__x86_64__)
 #		define GLM_MODEL	GLM_MODEL_64
@@ -332,8 +332,8 @@
 #	endif//GLM_MODEL
 #endif//GLM_MESSAGE
 
-/////////////////
-// C++ Version //
+///////////////////////////////////////////////////////////////////////////////////
+// C++ Version
 
 // User defines: GLM_FORCE_CXX98
 
@@ -444,7 +444,7 @@
 #	pragma message("GLM: #define GLM_FORCE_CXX98, GLM_FORCE_CXX03, GLM_LANG_CXX11 or GLM_FORCE_CXX1Y to force using a specific version of the C++ language")
 #endif//GLM_MESSAGE
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Has of C++ features
 
 #ifndef __has_feature
@@ -457,6 +457,11 @@
 // http://clang.llvm.org/cxx_status.html
 // http://gcc.gnu.org/projects/cxx0x.html
 // http://msdn.microsoft.com/en-us/library/vstudio/hh567368(v=vs.120).aspx
+
+// N1720
+#define GLM_HAS_CXX11_STL ( \
+	(GLM_LANG & GLM_LANG_CXX11_FLAG) || \
+	((GLM_LANG & GLM_LANG_CXX0X_FLAG) && (GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC13)))
 
 // N1720
 #define GLM_HAS_STATIC_ASSERT ( \
@@ -512,10 +517,9 @@
 	((GLM_LANG & GLM_LANG_CXX0X_FLAG) && (GLM_COMPILER & GLM_COMPILER_GCC) && (GLM_COMPILER >= GLM_COMPILER_GCC43)))
 
 #define GLM_HAS_TEMPLATE_ALIASES ( \
-	(GLM_LANG & GLM_LANG_CXX11_FLAG) || \
 	((GLM_LANG & GLM_LANG_CXX0X_FLAG) && ((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC12))) || \
-	((GLM_LANG & GLM_LANG_CXX0X_FLAG) && (GLM_COMPILER & GLM_COMPILER_GCC) && (GLM_COMPILER >= GLM_COMPILER_GCC47)) || \
 	__has_feature(cxx_alias_templates))
+	//((GLM_LANG & GLM_LANG_CXX0X_FLAG) && (GLM_COMPILER & GLM_COMPILER_GCC) && (GLM_COMPILER >= GLM_COMPILER_GCC47)) || \
 
 #define GLM_HAS_RANGE_FOR ( \
 	(GLM_LANG & GLM_LANG_CXX11_FLAG) || \
@@ -545,7 +549,7 @@
 // Not standard
 #define GLM_HAS_ANONYMOUS_UNION (GLM_LANG & GLM_LANG_CXXMS_FLAG)
 
-/////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Platform 
 
 // User defines: GLM_FORCE_PURE GLM_FORCE_SSE2 GLM_FORCE_SSE3 GLM_FORCE_AVX GLM_FORCE_AVX2
@@ -653,7 +657,7 @@
 #	pragma message("GLM: #define GLM_FORCE_PURE to avoid using platform specific instruction sets")
 #endif//GLM_MESSAGE
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Static assert
 
 #if GLM_HAS_STATIC_ASSERT
@@ -667,7 +671,7 @@
 #	define GLM_STATIC_ASSERT_NULL
 #endif//GLM_LANG
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Qualifiers
 
 #if GLM_COMPILER & GLM_COMPILER_CUDA
@@ -687,21 +691,26 @@
 #if defined(GLM_FORCE_INLINE)
 #	if GLM_COMPILER & GLM_COMPILER_VC
 #		define GLM_INLINE __forceinline
+#		define GLM_NEVER_INLINE __declspec((noinline))
 #	elif GLM_COMPILER & GLM_COMPILER_GCC
-#		define GLM_INLINE __attribute__((always_inline)) inline
+#		define GLM_INLINE inline __attribute__((__always_inline__))
+#		define GLM_NEVER_INLINE __attribute__((__noinline__))
 #	elif GLM_COMPILER & GLM_COMPILER_CLANG
-#		define GLM_INLINE __attribute__((always_inline))
+#		define GLM_INLINE __attribute__((__always_inline__))
+#		define GLM_NEVER_INLINE __attribute__((__noinline__))
 #	else
 #		define GLM_INLINE inline
+#		define GLM_NEVER_INLINE
 #	endif//GLM_COMPILER
 #else
 #	define GLM_INLINE inline
+#	define GLM_NEVER_INLINE
 #endif//defined(GLM_FORCE_INLINE)
 
 #define GLM_FUNC_DECL GLM_CUDA_FUNC_DECL
 #define GLM_FUNC_QUALIFIER GLM_CUDA_FUNC_DEF GLM_INLINE
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Swizzle operators
 
 // User defines: GLM_SWIZZLE
@@ -715,22 +724,22 @@
 #	endif
 #endif//GLM_MESSAGE
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Qualifiers
 
 #if GLM_COMPILER & GLM_COMPILER_VC
 #	define GLM_DEPRECATED __declspec(deprecated)
 #	define GLM_ALIGN(x) __declspec(align(x))
-#	define GLM_ALIGNED_STRUCT(x) __declspec(align(x)) struct
+#	define GLM_ALIGNED_STRUCT(x) struct __declspec(align(x))
 #	define GLM_RESTRICT __declspec(restrict)
 #	define GLM_RESTRICT_VAR __restrict
 #elif GLM_COMPILER & GLM_COMPILER_INTEL
 #	define GLM_DEPRECATED
 #	define GLM_ALIGN(x) __declspec(align(x))
-#	define GLM_ALIGNED_STRUCT(x) __declspec(align(x)) struct
+#	define GLM_ALIGNED_STRUCT(x) struct __declspec(align(x))
 #	define GLM_RESTRICT
 #	define GLM_RESTRICT_VAR __restrict
-#elif GLM_COMPILER & (GLM_COMPILER_GCC | GLM_COMPILER_CLANG)
+#elif GLM_COMPILER & (GLM_COMPILER_GCC | GLM_COMPILER_CLANG | GLM_COMPILER_CUDA)
 #	define GLM_DEPRECATED __attribute__((__deprecated__))
 #	define GLM_ALIGN(x) __attribute__((aligned(x)))
 #	define GLM_ALIGNED_STRUCT(x) struct __attribute__((aligned(x)))
@@ -739,7 +748,7 @@
 #else
 #	define GLM_DEPRECATED
 #	define GLM_ALIGN
-#	define GLM_ALIGNED_STRUCT(x)
+#	define GLM_ALIGNED_STRUCT(x) struct
 #	define GLM_RESTRICT
 #	define GLM_RESTRICT_VAR
 #endif//GLM_COMPILER
@@ -750,7 +759,7 @@
 #	define GLM_CONSTEXPR
 #endif
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
 // Length type
 
 // User defines: GLM_FORCE_SIZE_T_LENGTH GLM_FORCE_SIZE_FUNC
@@ -793,3 +802,11 @@ namespace detail
 #		pragma message("GLM: #define GLM_FORCE_SIZE_T_LENGTH for .length() to return a size_t")
 #	endif
 #endif//GLM_MESSAGE
+
+///////////////////////////////////////////////////////////////////////////////////
+// Uninitialize constructors
+
+namespace glm
+{
+	enum ctor{uninitialize};
+}//namespace glm

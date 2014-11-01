@@ -20,86 +20,94 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ///
-/// @ref gtx_bit
-/// @file glm/gtx/bit.hpp
-/// @date 2007-03-14 / 2011-06-07
+/// @ref gtc_bit
+/// @file glm/gtc/integer.hpp
+/// @date 2014-10-25 / 2014-10-25
 /// @author Christophe Riccio
 ///
 /// @see core (dependence)
-/// @see gtc_half_float (dependence)
+/// @see gtc_bitfield (dependence)
 ///
-/// @defgroup gtx_bit GLM_GTX_bit
-/// @ingroup gtx
+/// @defgroup gtc_integer GLM_GTC_integer
+/// @ingroup gtc
 /// 
 /// @brief Allow to perform bit operations on integer values
 /// 
-/// <glm/gtx/bit.hpp> need to be included to use these functionalities.
+/// <glm/gtc/integer.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 // Dependencies
-#include "../gtc/bitfield.hpp"
-#include "../gtc/integer.hpp"
+#include "../detail/setup.hpp"
+#include "../detail/precision.hpp"
+#include "../detail/_vectorize.hpp"
+#include "../vector_relational.hpp"
+#include "../common.hpp"
+#include <limits>
 
-#if(defined(GLM_MESSAGES))
-#	pragma message("GLM: GLM_GTX_bit extension is deprecated, include GLM_GTC_bitfield and GLM_GTC_integer instead")
+#if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
+#	pragma message("GLM: GLM_GTC_integer extension included")
 #endif
 
 namespace glm
 {
-	/// @addtogroup gtx_bit
+	/// @addtogroup gtc_integer
 	/// @{
 
-	/// @see gtx_bit
+	/// Return true if the value is a power of two number.
+	///
+	/// @see gtc_integer
 	template <typename genIUType>
-	GLM_FUNC_DECL genIUType highestBitValue(genIUType Value);
+	GLM_FUNC_DECL bool isPowerOfTwo(genIUType Value);
 
-	/// Find the highest bit set to 1 in a integer variable and return its value.
+	/// Return true if the value is a power of two number.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> highestBitValue(vecType<T, P> const & value);
+	GLM_FUNC_DECL vecType<bool, P> isPowerOfTwo(vecType<T, P> const & value);
 
-	/// Return the power of two number which value is just higher the input value.
+	/// Return the power of two number which value is just higher the input value,
+	/// round up to a power of two.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename genIUType>
-	GLM_FUNC_DECL genIUType powerOfTwoAbove(genIUType Value);
+	GLM_FUNC_DECL genIUType ceilPowerOfTwo(genIUType Value);
 
-	/// Return the power of two number which value is just higher the input value.
+	/// Return the power of two number which value is just higher the input value,
+	/// round up to a power of two.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> powerOfTwoAbove(vecType<T, P> const & value);
+	GLM_FUNC_DECL vecType<T, P> ceilPowerOfTwo(vecType<T, P> const & value);
 
-	/// Return the power of two number which value is just lower the input value.
+	/// Return the power of two number which value is just lower the input value,
+	/// round down to a power of two.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename genIUType>
-	GLM_FUNC_DECL genIUType powerOfTwoBelow(genIUType Value);
+	GLM_FUNC_DECL genIUType floorPowerOfTwo(genIUType Value);
 
-	/// Return the power of two number which value is just lower the input value.
+	/// Return the power of two number which value is just lower the input value,
+	/// round down to a power of two.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> powerOfTwoBelow(vecType<T, P> const & value);
+	GLM_FUNC_DECL vecType<T, P> floorPowerOfTwo(vecType<T, P> const & value);
 
 	/// Return the power of two number which value is the closet to the input value.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename genIUType>
-	GLM_FUNC_DECL genIUType powerOfTwoNearest(genIUType Value);
+	GLM_FUNC_DECL genIUType roundPowerOfTwo(genIUType Value);
 
 	/// Return the power of two number which value is the closet to the input value.
 	///
-	/// @see gtx_bit
+	/// @see gtc_integer
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> powerOfTwoNearest(vecType<T, P> const & value);
+	GLM_FUNC_DECL vecType<T, P> roundPowerOfTwo(vecType<T, P> const & value);
 
 	/// @}
 } //namespace glm
 
-
-#include "bit.inl"
-
+#include "integer.inl"

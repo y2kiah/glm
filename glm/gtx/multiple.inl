@@ -13,17 +13,43 @@
 namespace glm{
 namespace detail
 {
-	template <bool Signed>
-	struct higherMultiple
+	template <bool is_float, bool is_signed>
+	struct compute_higherMultiple{};
+
+	template <>
+	struct compute_higherMultiple<true, true>
 	{
 		template <typename genType>
-		GLM_FUNC_QUALIFIER genType operator()
-		(
-			genType const & Source,
-			genType const & Multiple
-		)
+		GLM_FUNC_QUALIFIER static genType call(genType Source, genType Multiple)
 		{
-			if (Source > genType(0))
+			if(Source > genType(0))
+			{
+				genType Tmp = Source - genType(1);
+				return Tmp + (Multiple - std::fmod(Tmp, Multiple));
+			}
+			else
+				return Source + std::fmod(-Source, Multiple);
+		}
+	};
+
+	template <>
+	struct compute_higherMultiple<false, false>
+	{
+		template <typename genType>
+		GLM_FUNC_QUALIFIER static genType call(genType Source, genType Multiple)
+		{
+			genType Tmp = Source - genType(1);
+			return Tmp + (Multiple - (Tmp % Multiple));
+		}
+	};
+
+	template <>
+	struct compute_higherMultiple<false, true>
+	{
+		template <typename genType>
+		GLM_FUNC_QUALIFIER static genType call(genType Source, genType Multiple)
+		{
+			if(Source > genType(0))
 			{
 				genType Tmp = Source - genType(1);
 				return Tmp + (Multiple - (Tmp % Multiple));
@@ -33,18 +59,54 @@ namespace detail
 		}
 	};
 
+	template <bool is_float, bool is_signed>
+	struct compute_lowerMultiple{};
+
 	template <>
-	struct higherMultiple<false>
+	struct compute_lowerMultiple<true, true>
 	{
 		template <typename genType>
-		GLM_FUNC_QUALIFIER genType operator()
-		(
-			genType const & Source,
-			genType const & Multiple
-		)
+		GLM_FUNC_QUALIFIER static genType call(genType Source, genType Multiple)
 		{
-			genType Tmp = Source - genType(1);
-			return Tmp + (Multiple - (Tmp % Multiple));
+			if(Source >= genType(0))
+				return Source - std::fmod(Source, Multiple);
+			else
+			{
+				genType Tmp = Source + genType(1);
+				return Tmp - std::fmod(Tmp, Multiple) - Multiple;
+			}
+		}
+	};
+
+	template <>
+	struct compute_lowerMultiple<false, false>
+	{
+		template <typename genType>
+		GLM_FUNC_QUALIFIER static genType call(genType Source, genType Multiple)
+		{
+			if(Source >= genType(0))
+				return Source - Source % Multiple;
+			else
+			{
+				genType Tmp = Source + genType(1);
+				return Tmp - Tmp % Multiple - Multiple;
+			}
+		}
+	};
+
+	template <>
+	struct compute_lowerMultiple<false, true>
+	{
+		template <typename genType>
+		GLM_FUNC_QUALIFIER static genType call(genType Source, genType Multiple)
+		{
+			if(Source >= genType(0))
+				return Source - Source % Multiple;
+			else
+			{
+				genType Tmp = Source + genType(1);
+				return Tmp - Tmp % Multiple - Multiple;
+			}
 		}
 	};
 }//namespace detail
@@ -53,100 +115,29 @@ namespace detail
 	// higherMultiple
 
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType higherMultiple
-	(
-		genType const & Source,
-		genType const & Multiple
-	)
+	GLM_FUNC_QUALIFIER genType higherMultiple(genType Source, genType Multiple)
 	{
-		detail::higherMultiple<std::numeric_limits<genType>::is_signed> Compute;
-		return Compute(Source, Multiple);
+		return detail::compute_higherMultiple<std::numeric_limits<genType>::is_iec559, std::numeric_limits<genType>::is_signed>::call(Source, Multiple);
 	}
 
-	template <>
-	GLM_FUNC_QUALIFIER float higherMultiple
-	(	
-		float const & Source,
-		float const & Multiple
-	)
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> higherMultiple(vecType<T, P> const & Source, vecType<T, P> const & Multiple)
 	{
-		if (Source > float(0))
-		{
-			float Tmp = Source - float(1);
-			return Tmp + (Multiple - std::fmod(Tmp, Multiple));
-		}
-		else
-			return Source + std::fmod(-Source, Multiple);
+		return detail::functor2<T, P, vecType>::call(higherMultiple, Source, Multiple);
 	}
-
-	template <>
-	GLM_FUNC_QUALIFIER double higherMultiple
-	(
-		double const & Source,
-		double const & Multiple
-	)
-	{
-		if (Source > double(0))
-		{
-			double Tmp = Source - double(1);
-			return Tmp + (Multiple - std::fmod(Tmp, Multiple));
-		}
-		else
-			return Source + std::fmod(-Source, Multiple);
-	}
-
-	VECTORIZE_VEC_VEC(higherMultiple)
 
 	//////////////////////
 	// lowerMultiple
 
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType lowerMultiple
-	(
-		genType const & Source,
-		genType const & Multiple
-	)
+	GLM_FUNC_QUALIFIER genType lowerMultiple(genType Source, genType Multiple)
 	{
-		if (Source >= genType(0))
-			return Source - Source % Multiple;
-		else
-		{
-			genType Tmp = Source + genType(1);
-			return Tmp - Tmp % Multiple - Multiple;
-		}
+		return detail::compute_lowerMultiple<std::numeric_limits<genType>::is_iec559, std::numeric_limits<genType>::is_signed>::call(Source, Multiple);
 	}
 
-	template <>
-	GLM_FUNC_QUALIFIER float lowerMultiple
-	(
-		float const & Source,
-		float const & Multiple
-	)
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> lowerMultiple(vecType<T, P> const & Source, vecType<T, P> const & Multiple)
 	{
-		if (Source >= float(0))
-			return Source - std::fmod(Source, Multiple);
-		else
-		{
-			float Tmp = Source + float(1);
-			return Tmp - std::fmod(Tmp, Multiple) - Multiple;
-		}
+		return detail::functor2<T, P, vecType>::call(lowerMultiple, Source, Multiple);
 	}
-
-	template <>
-	GLM_FUNC_QUALIFIER double lowerMultiple
-	(
-		double const & Source,
-		double const & Multiple
-	)
-	{
-		if (Source >= double(0))
-			return Source - std::fmod(Source, Multiple);
-		else
-		{
-			double Tmp = Source + double(1);
-			return Tmp - std::fmod(Tmp, Multiple) - Multiple;
-		}
-	}
-
-	VECTORIZE_VEC_VEC(lowerMultiple)
 }//namespace glm

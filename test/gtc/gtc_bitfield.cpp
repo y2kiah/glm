@@ -1,82 +1,250 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2010-09-16
-// Updated : 2010-09-16
+// Created : 2014-10-25
+// Updated : 2014-10-25
 // Licence : This source is under MIT licence
-// File    : test/gtx/bit.cpp
+// File    : test/gtc/bitfield.cpp
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <glm/gtx/bit.hpp>
+#include <glm/gtc/bitfield.hpp>
 #include <glm/gtc/type_precision.hpp>
-
 #if GLM_ARCH != GLM_ARCH_PURE
 #	include <glm/ilm.hpp>
 #endif
-
-#include <iostream>
-#include <vector>
+#include <glm/vector_relational.hpp>
 #include <ctime>
+#include <cstdio>
+#include <vector>
 
-enum result
-{
-	SUCCESS,
-	FAIL,
-	ASSERT,
-	STATIC_ASSERT
-};
-
-namespace bitRevert
+namespace mask
 {
 	template <typename genType>
 	struct type
 	{
 		genType		Value;
 		genType		Return;
-		result		Result;
 	};
 
-	typedef type<glm::uint64> typeU64;
+	inline int mask_zero(int Bits)
+	{
+		return ~((~0) << Bits);
+	}
 
-#if(((GLM_COMPILER & GLM_COMPILER_GCC) == GLM_COMPILER_GCC) && (GLM_COMPILER < GLM_COMPILER_GCC44))
-	typeU64 const Data64[] =
+	inline int mask_mix(int Bits)
 	{
-		{0xffffffffffffffffLLU, 0xffffffffffffffffLLU, SUCCESS},
-		{0x0000000000000000LLU, 0x0000000000000000LLU, SUCCESS},
-		{0xf000000000000000LLU, 0x000000000000000fLLU, SUCCESS},
-	};
-#else
-	typeU64 const Data64[] =
+		return Bits >= 32 ? 0xffffffff : (static_cast<int>(1) << Bits) - static_cast<int>(1);
+	}
+
+	inline int mask_loop(int Bits)
 	{
-		{0xffffffffffffffff, 0xffffffffffffffff, SUCCESS},
-		{0x0000000000000000, 0x0000000000000000, SUCCESS},
-		{0xf000000000000000, 0x000000000000000f, SUCCESS},
-	};
-#endif
+		int Mask = 0;
+		for(int Bit = 0; Bit < Bits; ++Bit)
+			Mask |= (static_cast<int>(1) << Bit);
+		return Mask;
+	}
+
+	int perf()
+	{
+		int const Count = 100000000;
+
+		std::clock_t Timestamp1 = std::clock();
+
+		{
+			std::vector<int> Mask;
+			Mask.resize(Count);
+			for(int i = 0; i < Count; ++i)
+				Mask[i] = mask_mix(i % 32);
+		}
+
+		std::clock_t Timestamp2 = std::clock();
+
+		{
+			std::vector<int> Mask;
+			Mask.resize(Count);
+			for(int i = 0; i < Count; ++i)
+				Mask[i] = mask_loop(i % 32);
+		}
+
+		std::clock_t Timestamp3 = std::clock();
+
+		{
+			std::vector<int> Mask;
+			Mask.resize(Count);
+			for(int i = 0; i < Count; ++i)
+				Mask[i] = glm::mask(i % 32);
+		}
+
+		std::clock_t Timestamp4 = std::clock();
+
+		{
+			std::vector<int> Mask;
+			Mask.resize(Count);
+			for(int i = 0; i < Count; ++i)
+				Mask[i] = mask_zero(i % 32);
+		}
+
+		std::clock_t Timestamp5 = std::clock();
+
+		std::clock_t TimeMix = Timestamp2 - Timestamp1;
+		std::clock_t TimeLoop = Timestamp3 - Timestamp2;
+		std::clock_t TimeDefault = Timestamp4 - Timestamp3;
+		std::clock_t TimeZero = Timestamp5 - Timestamp4;
+
+		printf("mask[mix]: %d\n", static_cast<unsigned int>(TimeMix));
+		printf("mask[loop]: %d\n", static_cast<unsigned int>(TimeLoop));
+		printf("mask[default]: %d\n", static_cast<unsigned int>(TimeDefault));
+		printf("mask[zero]: %d\n", static_cast<unsigned int>(TimeZero));
+
+		return TimeDefault < TimeLoop ? 0 : 1;
+	}
+
+	int test_uint()
+	{
+		type<glm::uint> const Data[] =
+		{
+			{0, 0x00000000},
+			{1, 0x00000001},
+			{2, 0x00000003},
+			{3, 0x00000007}
+		};
+
+		int Error(0);
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
+		{
+			int Result = mask_zero(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
+		{
+			int Result = mask_mix(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
+		{
+			int Result = mask_loop(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
+		{
+			int Result = glm::mask(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		return Error;
+	}
+
+	int test_uvec4()
+	{
+		type<glm::ivec4> const Data[] =
+		{
+			{glm::ivec4(0), glm::ivec4(0x00000000)},
+			{glm::ivec4(1), glm::ivec4(0x00000001)},
+			{glm::ivec4(2), glm::ivec4(0x00000003)},
+			{glm::ivec4(3), glm::ivec4(0x00000007)}
+		};
+
+		int Error(0);
+
+		for(std::size_t i = 0, n = sizeof(Data) / sizeof(type<glm::ivec4>); i < n; ++i)
+		{
+			glm::ivec4 Result = glm::mask(Data[i].Value);
+			Error += glm::all(glm::equal(Data[i].Return, Result)) ? 0 : 1;
+		}
+
+		return Error;
+	}
 
 	int test()
 	{
-		glm::uint32 count = sizeof(Data64) / sizeof(typeU64);
-		
-		for(glm::uint32 i = 0; i < count; ++i)
-		{
-			glm::uint64 Return = glm::bitRevert(
-				Data64[i].Value);
-			
-			bool Compare = Data64[i].Return == Return;
-			
-			if(Data64[i].Result == SUCCESS && Compare)
-				continue;
-			else if(Data64[i].Result == FAIL && !Compare)
-				continue;
-			
-			std::cout << "glm::extractfield test fail on test " << i << std::endl;
-			return 1;
-		}
-		
-		return 0;
+		int Error(0);
+
+		Error += test_uint();
+		Error += test_uvec4();
+
+		return Error;
 	}
-}//bitRevert
+}//namespace mask
+
+namespace bitfieldInterleave3
+{
+	template <typename PARAM, typename RET>
+	inline RET refBitfieldInterleave(PARAM x, PARAM y, PARAM z)
+	{
+		RET Result = 0; 
+		for(RET i = 0; i < sizeof(PARAM) * 8; ++i)
+		{
+			Result |= ((RET(x) & (RET(1U) << i)) << ((i << 1) + 0));
+			Result |= ((RET(y) & (RET(1U) << i)) << ((i << 1) + 1));
+			Result |= ((RET(z) & (RET(1U) << i)) << ((i << 1) + 2));
+		}
+		return Result;
+	}
+
+	int test()
+	{
+		int Error(0);
+
+		glm::uint16 x_max = 1 << 11;
+		glm::uint16 y_max = 1 << 11;
+		glm::uint16 z_max = 1 << 11;
+
+		for(glm::uint16 z = 0; z < z_max; z += 27)
+		for(glm::uint16 y = 0; y < y_max; y += 27)
+		for(glm::uint16 x = 0; x < x_max; x += 27)
+		{
+			glm::uint64 ResultA = refBitfieldInterleave<glm::uint16, glm::uint64>(x, y, z);
+			glm::uint64 ResultB = glm::bitfieldInterleave(x, y, z);
+			Error += ResultA == ResultB ? 0 : 1;
+		}
+
+		return Error;
+	}
+}
+
+namespace bitfieldInterleave4
+{
+	template <typename PARAM, typename RET>
+	inline RET loopBitfieldInterleave(PARAM x, PARAM y, PARAM z, PARAM w)
+	{
+		RET const v[4] = {x, y, z, w};
+		RET Result = 0; 
+		for(RET i = 0; i < sizeof(PARAM) * 8; i++)
+		{
+			Result |= ((((v[0] >> i) & 1U)) << ((i << 2) + 0));
+			Result |= ((((v[1] >> i) & 1U)) << ((i << 2) + 1));
+			Result |= ((((v[2] >> i) & 1U)) << ((i << 2) + 2));
+			Result |= ((((v[3] >> i) & 1U)) << ((i << 2) + 3));
+		}
+		return Result;
+	}
+
+	int test()
+	{
+		int Error(0);
+
+		glm::uint16 x_max = 1 << 11;
+		glm::uint16 y_max = 1 << 11;
+		glm::uint16 z_max = 1 << 11;
+		glm::uint16 w_max = 1 << 11;
+
+		for(glm::uint16 w = 0; w < w_max; w += 27)
+		for(glm::uint16 z = 0; z < z_max; z += 27)
+		for(glm::uint16 y = 0; y < y_max; y += 27)
+		for(glm::uint16 x = 0; x < x_max; x += 27)
+		{
+			glm::uint64 ResultA = loopBitfieldInterleave<glm::uint16, glm::uint64>(x, y, z, w);
+			glm::uint64 ResultB = glm::bitfieldInterleave(x, y, z, w);
+			Error += ResultA == ResultB ? 0 : 1;
+		}
+
+		return Error;
+	}
+}
 
 namespace bitfieldInterleave
 {
@@ -331,7 +499,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "glm::bitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("glm::bitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 
 		{
@@ -342,7 +510,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "fastBitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("fastBitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 
 		{
@@ -353,7 +521,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "loopBitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("loopBitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 
 		{
@@ -364,7 +532,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "interleaveBitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("interleaveBitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 
 #		if GLM_ARCH != GLM_ARCH_PURE
@@ -376,7 +544,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "sseBitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("sseBitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 
 		{
@@ -387,7 +555,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "sseUnalignedBitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("sseUnalignedBitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 #		endif// GLM_ARCH != GLM_ARCH_PURE
 
@@ -399,7 +567,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "glm::detail::bitfieldInterleave Time " << Time << " clocks" << std::endl;
+			std::printf("glm::detail::bitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 
 #		if GLM_ARCH != GLM_ARCH_PURE
@@ -417,7 +585,7 @@ namespace bitfieldInterleave
 
 			std::clock_t Time = std::clock() - LastTime;
 
-			std::cout << "_mm_bit_interleave_si128 Time " << Time << " clocks" << std::endl;
+			std::printf("_mm_bit_interleave_si128 Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 #		endif// GLM_ARCH != GLM_ARCH_PURE
 
@@ -425,90 +593,17 @@ namespace bitfieldInterleave
 	}
 }
 
-namespace bitfieldInterleave3
-{
-	template <typename PARAM, typename RET>
-	inline RET refBitfieldInterleave(PARAM x, PARAM y, PARAM z)
-	{
-		RET Result = 0; 
-		for(RET i = 0; i < sizeof(PARAM) * 8; ++i)
-		{
-			Result |= ((RET(x) & (RET(1U) << i)) << ((i << 1) + 0));
-			Result |= ((RET(y) & (RET(1U) << i)) << ((i << 1) + 1));
-			Result |= ((RET(z) & (RET(1U) << i)) << ((i << 1) + 2));
-		}
-		return Result;
-	}
-
-	int test()
-	{
-		int Error(0);
-
-		glm::uint16 x_max = 1 << 11;
-		glm::uint16 y_max = 1 << 11;
-		glm::uint16 z_max = 1 << 11;
-
-		for(glm::uint16 z = 0; z < z_max; z += 27)
-		for(glm::uint16 y = 0; y < y_max; y += 27)
-		for(glm::uint16 x = 0; x < x_max; x += 27)
-		{
-			glm::uint64 ResultA = refBitfieldInterleave<glm::uint16, glm::uint64>(x, y, z);
-			glm::uint64 ResultB = glm::bitfieldInterleave(x, y, z);
-			Error += ResultA == ResultB ? 0 : 1;
-		}
-
-		return Error;
-	}
-}
-
-namespace bitfieldInterleave4
-{
-	template <typename PARAM, typename RET>
-	inline RET loopBitfieldInterleave(PARAM x, PARAM y, PARAM z, PARAM w)
-	{
-		RET const v[4] = {x, y, z, w};
-		RET Result = 0; 
-		for(RET i = 0; i < sizeof(PARAM) * 8; i++)
-		{
-			Result |= ((((v[0] >> i) & 1U)) << ((i << 2) + 0));
-			Result |= ((((v[1] >> i) & 1U)) << ((i << 2) + 1));
-			Result |= ((((v[2] >> i) & 1U)) << ((i << 2) + 2));
-			Result |= ((((v[3] >> i) & 1U)) << ((i << 2) + 3));
-		}
-		return Result;
-	}
-
-	int test()
-	{
-		int Error(0);
-
-		glm::uint16 x_max = 1 << 11;
-		glm::uint16 y_max = 1 << 11;
-		glm::uint16 z_max = 1 << 11;
-		glm::uint16 w_max = 1 << 11;
-
-		for(glm::uint16 w = 0; w < w_max; w += 27)
-		for(glm::uint16 z = 0; z < z_max; z += 27)
-		for(glm::uint16 y = 0; y < y_max; y += 27)
-		for(glm::uint16 x = 0; x < x_max; x += 27)
-		{
-			glm::uint64 ResultA = loopBitfieldInterleave<glm::uint16, glm::uint64>(x, y, z, w);
-			glm::uint64 ResultB = glm::bitfieldInterleave(x, y, z, w);
-			Error += ResultA == ResultB ? 0 : 1;
-		}
-
-		return Error;
-	}
-}
-
 int main()
 {
 	int Error(0);
 
+	Error += ::mask::test();
 	Error += ::bitfieldInterleave3::test();
 	Error += ::bitfieldInterleave4::test();
 	Error += ::bitfieldInterleave::test();
-	Error += ::bitRevert::test();
+	//Error += ::bitRevert::test();
+
+	Error += ::mask::perf();
 
 	return Error;
 }

@@ -43,11 +43,7 @@
 #if(GLM_ARCH != GLM_ARCH_PURE)
 
 #if(GLM_ARCH & GLM_ARCH_SSE2)
-<<<<<<< HEAD
 #	include "../ilm/intrinsic_matrix.hpp"
-=======
-#	include "../detail/intrinsic_matrix.hpp"
->>>>>>> master
 #	include "../gtx/simd_vec4.hpp"
 #else
 #	error "GLM: GLM_GTX_simd_mat4 requires compiler support of SSE2 through intrinsics"

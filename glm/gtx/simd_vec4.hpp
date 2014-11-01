@@ -115,17 +115,14 @@ namespace detail
 		//////////////////////////////////////
 		// Explicit basic constructors
 
-		explicit fvec4SIMD(
-			ctor);
-		explicit fvec4SIMD(
-			float const & s);
+		explicit fvec4SIMD(ctor);
+		explicit fvec4SIMD(float const & s);
 		explicit fvec4SIMD(
 			float const & x, 
 			float const & y, 
 			float const & z, 
 			float const & w);
-		explicit fvec4SIMD(
-			vec4 const & v);
+		explicit fvec4SIMD(vec4 const & v);
 
 		////////////////////////////////////////
 		//// Conversion vector constructors
@@ -157,10 +154,10 @@ namespace detail
 
 		//////////////////////////////////////
 		// Accesses
-
+/*
 		float & operator[](size_type i);
 		float const & operator[](size_type i) const;
-
+*/
 		//////////////////////////////////////
 		// Swizzle operators
 
