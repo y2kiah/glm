@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +25,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/type_int.hpp
+/// @file glm/detail/type_int.hpp
 /// @date 2008-08-22 / 2013-03-30
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +33,7 @@
 #pragma once
 
 #include "setup.hpp"
+#include <type_traits>
 
 #if GLM_HAS_EXTENDED_INTEGER_TYPE
 #	include <cstdint>
@@ -51,15 +56,12 @@ namespace detail
 #		if(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) // C99 detected, 64 bit types available
 			typedef int64_t					sint64;
 			typedef uint64_t				uint64;
-#		elif(GLM_COMPILER & GLM_COMPILER_VC)
+#		elif GLM_COMPILER & GLM_COMPILER_VC
 			typedef signed __int64			sint64;
 			typedef unsigned __int64		uint64;
-#		elif(GLM_COMPILER & (GLM_COMPILER_GCC | GLM_COMPILER_LLVM_GCC | GLM_COMPILER_CLANG))
+#		elif GLM_COMPILER & GLM_COMPILER_GCC
 			__extension__ typedef signed long long		sint64;
 			__extension__ typedef unsigned long long	uint64;
-#		elif(GLM_COMPILER & GLM_COMPILER_BC)
-			typedef Int64					sint64;
-			typedef Uint64					uint64;
 #		else//unknown compiler
 			typedef signed long	long		sint64;
 			typedef unsigned long long		uint64;
@@ -84,109 +86,139 @@ namespace detail
 	typedef unsigned int					mediump_uint_t;
 	typedef unsigned int					highp_uint_t;
 
-	template <typename genType>
-	struct make_signed
-	{};
+#	if GLM_HAS_MAKE_SIGNED
+		using std::make_signed;
+		using std::make_unsigned;
 
-	template <>
-	struct make_signed<int8>
-	{
-		typedef int8 type;
-	};
+#	else//GLM_HAS_MAKE_SIGNED
+		template <typename genType>
+		struct make_signed
+		{};
 
-	template <>
-	struct make_signed<uint8>
-	{
-		typedef int8 type;
-	};
+		template <>
+		struct make_signed<char>
+		{
+			typedef char type;
+		};
 
-	template <>
-	struct make_signed<int16>
-	{
-		typedef int16 type;
-	};
+		template <>
+		struct make_signed<short>
+		{
+			typedef short type;
+		};
 
-	template <>
-	struct make_signed<uint16>
-	{
-		typedef int16 type;
-	};
+		template <>
+		struct make_signed<int>
+		{
+			typedef int type;
+		};
 
-	template <>
-	struct make_signed<int32>
-	{
-		typedef int32 type;
-	};
+		template <>
+		struct make_signed<long>
+		{
+			typedef long type;
+		};
 
-	template <>
-	struct make_signed<uint32>
-	{
-		typedef int32 type;
-	};
+		template <>
+		struct make_signed<long long>
+		{
+			typedef long long type;
+		};
 
-	template <>
-	struct make_signed<int64>
-	{
-		typedef int64 type;
-	};
+		template <>
+		struct make_signed<unsigned char>
+		{
+			typedef char type;
+		};
 
-	template <>
-	struct make_signed<uint64>
-	{
-		typedef int64 type;
-	};
+		template <>
+		struct make_signed<unsigned short>
+		{
+			typedef short type;
+		};
 
-	template <typename genType>
-	struct make_unsigned
-	{};
+		template <>
+		struct make_signed<unsigned int>
+		{
+			typedef int type;
+		};
 
-	template <>
-	struct make_unsigned<int8>
-	{
-		typedef uint8 type;
-	};
+		template <>
+		struct make_signed<unsigned long>
+		{
+			typedef long type;
+		};
 
-	template <>
-	struct make_unsigned<uint8>
-	{
-		typedef uint8 type;
-	};
+		template <>
+		struct make_signed<unsigned long long>
+		{
+			typedef long long type;
+		};
 
-	template <>
-	struct make_unsigned<int16>
-	{
-		typedef uint16 type;
-	};
+		template <typename genType>
+		struct make_unsigned
+		{};
 
-	template <>
-	struct make_unsigned<uint16>
-	{
-		typedef uint16 type;
-	};
+		template <>
+		struct make_unsigned<char>
+		{
+			typedef unsigned char type;
+		};
 
-	template <>
-	struct make_unsigned<int32>
-	{
-		typedef uint32 type;
-	};
+		template <>
+		struct make_unsigned<short>
+		{
+			typedef unsigned short type;
+		};
 
-	template <>
-	struct make_unsigned<uint32>
-	{
-		typedef uint32 type;
-	};
+		template <>
+		struct make_unsigned<int>
+		{
+			typedef unsigned int type;
+		};
 
-	template <>
-	struct make_unsigned<int64>
-	{
-		typedef uint64 type;
-	};
+		template <>
+		struct make_unsigned<long>
+		{
+			typedef unsigned long type;
+		};
 
-	template <>
-	struct make_unsigned<uint64>
-	{
-		typedef uint64 type;
-	};
+		template <>
+		struct make_unsigned<long long>
+		{
+			typedef unsigned long long type;
+		};
+
+		template <>
+		struct make_unsigned<unsigned char>
+		{
+			typedef unsigned char type;
+		};
+
+		template <>
+		struct make_unsigned<unsigned short>
+		{
+			typedef unsigned short type;
+		};
+
+		template <>
+		struct make_unsigned<unsigned int>
+		{
+			typedef unsigned int type;
+		};
+
+		template <>
+		struct make_unsigned<unsigned long>
+		{
+			typedef unsigned long type;
+		};
+
+		template <>
+		struct make_unsigned<unsigned long long>
+		{
+			typedef unsigned long long type;
+		};
+#	endif//GLM_HAS_MAKE_SIGNED
 }//namespace detail
 
 	typedef detail::int8					int8;

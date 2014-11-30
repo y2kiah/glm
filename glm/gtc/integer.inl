@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,138 +26,49 @@
 ///
 /// @ref gtc_integer
 /// @file glm/gtc/integer.inl
-/// @date 2014-10-25 / 2014-10-25
+/// @date 2014-11-17 / 2014-11-17
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
 namespace glm{
 namespace detail
 {
-	template <typename T, precision P, template <typename, precision> class vecType, bool compute = false>
-	struct compute_ceilShift
+	template <typename T, precision P, template <class, precision> class vecType>
+	struct compute_log2<T, P, vecType, false>
 	{
-		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & v, T)
+		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & vec)
 		{
-			return v;
+			//Equivalent to return findMSB(vec); but save one function call in ASM with VC
+			//return findMSB(vec);
+			return detail::compute_findMSB_vec<T, P, vecType, sizeof(T) * 8>::call(vec);
 		}
 	};
 
-	template <typename T, precision P, template <typename, precision> class vecType>
-	struct compute_ceilShift<T, P, vecType, true>
-	{
-		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & v, T Shift)
+#	if GLM_HAS_BITSCAN_WINDOWS
+		template <precision P>
+		struct compute_log2<int, P, tvec4, false>
 		{
-			return v | (v >> Shift);
-		}
-	};
+			GLM_FUNC_QUALIFIER static tvec4<int, P> call(tvec4<int, P> const & vec)
+			{
+				tvec4<int, P> Result(glm::uninitialize);
 
-	template <typename T, precision P, template <typename, precision> class vecType, bool isSigned = true>
-	struct compute_ceilPowerOfTwo
+				_BitScanReverse(reinterpret_cast<unsigned long*>(&Result.x), vec.x);
+				_BitScanReverse(reinterpret_cast<unsigned long*>(&Result.y), vec.y);
+				_BitScanReverse(reinterpret_cast<unsigned long*>(&Result.z), vec.z);
+				_BitScanReverse(reinterpret_cast<unsigned long*>(&Result.w), vec.w);
+
+				return Result;
+			}
+		};
+#	endif//GLM_HAS_BITSCAN_WINDOWS
+
+	template <typename T, precision P, template <class, precision> class vecType, typename genType>
+	struct compute_mod<T, P, vecType, genType, false>
 	{
-		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & x)
+		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & a, genType const & b)
 		{
-			GLM_STATIC_ASSERT(!std::numeric_limits<T>::is_iec559, "'ceilPowerOfTwo' only accept integer scalar or vector inputs");
-
-			vecType<T, P> const Sign(sign(x));
-
-			vecType<T, P> v(abs(x));
-
-			v = v - static_cast<T>(1);
-			v = v | (v >> static_cast<T>(1));
-			v = v | (v >> static_cast<T>(2));
-			v = v | (v >> static_cast<T>(4));
-			v = compute_ceilShift<T, P, vecType, sizeof(T) >= 2>::call(v, 8);
-			v = compute_ceilShift<T, P, vecType, sizeof(T) >= 4>::call(v, 16);
-			v = compute_ceilShift<T, P, vecType, sizeof(T) >= 8>::call(v, 32);
-			return (v + static_cast<T>(1)) * Sign;
-		}
-	};
-
-	template <typename T, precision P, template <typename, precision> class vecType>
-	struct compute_ceilPowerOfTwo<T, P, vecType, false>
-	{
-		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & x)
-		{
-			GLM_STATIC_ASSERT(!std::numeric_limits<T>::is_iec559, "'ceilPowerOfTwo' only accept integer scalar or vector inputs");
-
-			vecType<T, P> v(x);
-
-			v = v - static_cast<T>(1);
-			v = v | (v >> static_cast<T>(1));
-			v = v | (v >> static_cast<T>(2));
-			v = v | (v >> static_cast<T>(4));
-			v = compute_ceilShift<T, P, vecType, sizeof(T) >= 2>::call(v, 8);
-			v = compute_ceilShift<T, P, vecType, sizeof(T) >= 4>::call(v, 16);
-			v = compute_ceilShift<T, P, vecType, sizeof(T) >= 8>::call(v, 32);
-			return v + static_cast<T>(1);
+			return a % b;
 		}
 	};
 }//namespace detail
-
-	////////////////
-	// isPowerOfTwo
-
-	template <typename genType>
-	GLM_FUNC_QUALIFIER bool isPowerOfTwo(genType Value)
-	{
-		genType const Result = glm::abs(Value);
-		return !(Result & (Result - 1));
-	}
-
-	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER vecType<bool, P> isPowerOfTwo(vecType<T, P> const & Value)
-	{
-		vecType<T, P> const Result(abs(Value));
-		return equal(Result & (Result - 1), vecType<T, P>(0));
-	}
-
-	//////////////////
-	// ceilPowerOfTwo
-
-	template <typename genType>
-	GLM_FUNC_QUALIFIER genType ceilPowerOfTwo(genType value)
-	{
-		return detail::compute_ceilPowerOfTwo<genType, defaultp, tvec1, std::numeric_limits<genType>::is_signed>::call(tvec1<genType, defaultp>(value)).x;
-	}
-
-	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T, P> ceilPowerOfTwo(vecType<T, P> const & v)
-	{
-		return detail::compute_ceilPowerOfTwo<T, P, vecType, std::numeric_limits<T>::is_signed>::call(v);
-	}
-
-	///////////////////
-	// floorPowerOfTwo
-
-	template <typename genType>
-	GLM_FUNC_QUALIFIER genType floorPowerOfTwo(genType value)
-	{
-		return isPowerOfTwo(value) ? value : highestBitValue(value);
-	}
-
-	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T, P> floorPowerOfTwo(vecType<T, P> const & v)
-	{
-		return detail::functor1<T, T, P, vecType>::call(floorPowerOfTwo, v);
-	}
-
-	///////////////////
-	// roundPowerOfTwo
-
-	template <typename genType>
-	GLM_FUNC_QUALIFIER genType roundPowerOfTwo(genType value)
-	{
-		if(isPowerOfTwo(value))
-			return value;
-
-		genType const prev = highestBitValue(value);
-		genType const next = prev << 1;
-		return (next - value) < (value - prev) ? next : prev;
-	}
-
-	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T, P> roundPowerOfTwo(vecType<T, P> const & v)
-	{
-		return detail::functor1<T, T, P, vecType>::call(roundPowerOfTwo, v);
-	}
 }//namespace glm

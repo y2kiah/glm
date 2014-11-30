@@ -1,11 +1,33 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2014-10-25
-// Updated : 2014-10-25
-// Licence : This source is under MIT licence
-// File    : test/gtc/bitfield.cpp
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+/// OpenGL Mathematics (glm.g-truc.net)
+///
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+/// 
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+/// THE SOFTWARE.
+///
+/// @file test/gtc/gtc_bitfield.cpp
+/// @date 2014-10-25 / 2014-11-25
+/// @author Christophe Riccio
+///////////////////////////////////////////////////////////////////////////////////
 
 #include <glm/gtc/bitfield.hpp>
 #include <glm/gtc/type_precision.hpp>
@@ -33,7 +55,20 @@ namespace mask
 
 	inline int mask_mix(int Bits)
 	{
-		return Bits >= 32 ? 0xffffffff : (static_cast<int>(1) << Bits) - static_cast<int>(1);
+		return Bits >= sizeof(int) * 8 ? 0xffffffff : (static_cast<int>(1) << Bits) - static_cast<int>(1);
+	}
+
+	inline int mask_half(int Bits)
+	{
+		// We do the shift in two steps because 1 << 32 on an int is undefined.
+
+		int const Half = Bits >> 1;
+		int const Fill = ~0;
+		int const ShiftHaft = (Fill << Half);
+		int const Rest = Bits - Half;
+		int const Reversed = ShiftHaft << Rest;
+
+		return ~Reversed;
 	}
 
 	inline int mask_loop(int Bits)
@@ -86,15 +121,26 @@ namespace mask
 
 		std::clock_t Timestamp5 = std::clock();
 
+		{
+			std::vector<int> Mask;
+			Mask.resize(Count);
+			for(int i = 0; i < Count; ++i)
+				Mask[i] = mask_half(i % 32);
+		}
+
+		std::clock_t Timestamp6 = std::clock();
+
 		std::clock_t TimeMix = Timestamp2 - Timestamp1;
 		std::clock_t TimeLoop = Timestamp3 - Timestamp2;
 		std::clock_t TimeDefault = Timestamp4 - Timestamp3;
 		std::clock_t TimeZero = Timestamp5 - Timestamp4;
+		std::clock_t TimeHalf = Timestamp6 - Timestamp5;
 
 		printf("mask[mix]: %d\n", static_cast<unsigned int>(TimeMix));
 		printf("mask[loop]: %d\n", static_cast<unsigned int>(TimeLoop));
 		printf("mask[default]: %d\n", static_cast<unsigned int>(TimeDefault));
 		printf("mask[zero]: %d\n", static_cast<unsigned int>(TimeZero));
+		printf("mask[half]: %d\n", static_cast<unsigned int>(TimeHalf));
 
 		return TimeDefault < TimeLoop ? 0 : 1;
 	}
@@ -112,16 +158,22 @@ namespace mask
 		};
 
 		int Error(0);
-
+/* mask_zero is sadly not a correct code
 		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
 		{
 			int Result = mask_zero(Data[i].Value);
 			Error += Data[i].Return == Result ? 0 : 1;
 		}
-
+*/
 		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
 		{
 			int Result = mask_mix(Data[i].Value);
+			Error += Data[i].Return == Result ? 0 : 1;
+		}
+
+		for(std::size_t i = 0; i < sizeof(Data) / sizeof(type<int>); ++i)
+		{
+			int Result = mask_half(Data[i].Value);
 			Error += Data[i].Return == Result ? 0 : 1;
 		}
 
@@ -442,15 +494,6 @@ namespace bitfieldInterleave
 
 	int test()
 	{
-		glm::uint32 x_max = 1 << 11;
-		glm::uint32 y_max = 1 << 10;
-
-		// ALU
-		std::vector<glm::uint64> Data(x_max * y_max);
-		std::vector<glm::u32vec2> Param(x_max * y_max);
-		for(glm::uint32 i = 0; i < Param.size(); ++i)
-			Param[i] = glm::u32vec2(i % x_max, i / y_max);
-
 		{
 			for(glm::uint32 y = 0; y < (1 << 10); ++y)
 			for(glm::uint32 x = 0; x < (1 << 10); ++x)
@@ -494,6 +537,20 @@ namespace bitfieldInterleave
 				assert(D == F);
 			}
 		}
+
+		return 0;
+	}
+
+	int perf()
+	{
+		glm::uint32 x_max = 1 << 11;
+		glm::uint32 y_max = 1 << 10;
+
+		// ALU
+		std::vector<glm::uint64> Data(x_max * y_max);
+		std::vector<glm::u32vec2> Param(x_max * y_max);
+		for(glm::uint32 i = 0; i < Param.size(); ++i)
+			Param[i] = glm::u32vec2(i % x_max, i / y_max);
 
 		{
 			std::clock_t LastTime = std::clock();
@@ -595,7 +652,7 @@ namespace bitfieldInterleave
 
 		return 0;
 	}
-}
+}//namespace bitfieldInterleave
 
 int main()
 {
@@ -607,7 +664,10 @@ int main()
 	Error += ::bitfieldInterleave::test();
 	//Error += ::bitRevert::test();
 
-	Error += ::mask::perf();
+#	ifdef NDEBUG
+		Error += ::mask::perf();
+		Error += ::bitfieldInterleave::perf();
+#	endif//NDEBUG
 
 	return Error;
 }

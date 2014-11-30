@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -136,8 +140,7 @@ namespace glm
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL tmat4x2<T, defaultp> make_mat4x2(
-		T const * const ptr);
+	GLM_FUNC_DECL tmat4x2<T, defaultp> make_mat4x2(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr

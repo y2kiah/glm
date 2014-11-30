@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -67,7 +71,7 @@ namespace glm
 	template <typename T, precision P> 
 	GLM_FUNC_QUALIFIER tmat3x3<T, P> rotate(
 		tmat3x3<T, P> const & m,
-		T const & angle);
+		T angle);
 
 	/// Builds a scale 3 * 3 matrix created from a vector of 2 components.
 	///
@@ -85,7 +89,7 @@ namespace glm
 	template <typename T, precision P> 
 	GLM_FUNC_QUALIFIER tmat3x3<T, P> shearX(
 		tmat3x3<T, P> const & m,
-		T const & y);
+		T y);
 
 	/// Builds a vertical (parallel to the y axis) shear 3 * 3 matrix. 
 	///
@@ -94,7 +98,7 @@ namespace glm
 	template <typename T, precision P> 
 	GLM_FUNC_QUALIFIER tmat3x3<T, P> shearY(
 		tmat3x3<T, P> const & m,
-		T const & x);
+		T x);
 
 	/// @}
 }//namespace glm

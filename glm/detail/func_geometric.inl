@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +25,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/func_geometric.inl
+/// @file glm/detail/func_geometric.inl
 /// @date 2008-08-03 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +109,7 @@ namespace detail
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T, P> distance(vecType<T, P> const & p0, vecType<T, P> const & p1)
+	GLM_FUNC_QUALIFIER T distance(vecType<T, P> const & p0, vecType<T, P> const & p1)
 	{
 		return length(p1 - p0);
 	}
@@ -174,24 +178,18 @@ namespace detail
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<genType>::is_iec559, "'refract' only accept floating-point inputs");
 
-		genType dotValue = dot(N, I);
-		genType k = static_cast<genType>(1) - eta * eta * (static_cast<genType>(1) - dotValue * dotValue);
-		if(k < static_cast<genType>(0))
-			return static_cast<genType>(0);
-		else
-			return eta * I - (eta * dotValue + sqrt(k)) * N;
+		genType const dotValue(dot(N, I));
+		genType const k(static_cast<genType>(1) - eta * eta * (static_cast<genType>(1) - dotValue * dotValue));
+		return (eta * I - (eta * dotValue + sqrt(k)) * N) * static_cast<genType>(k >= static_cast<genType>(0));
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER vecType<T, P> refract(vecType<T, P> const & I, vecType<T, P> const & N, T const & eta)
+	GLM_FUNC_QUALIFIER vecType<T, P> refract(vecType<T, P> const & I, vecType<T, P> const & N, T eta)
 	{
 		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559, "'refract' only accept floating-point inputs");
 
-		T dotValue = dot(N, I);
-		T k = static_cast<T>(1) - eta * eta * (static_cast<T>(1) - dotValue * dotValue);
-		if(k < static_cast<T>(0))
-			return vecType<T, P>(0);
-		else
-			return eta * I - (eta * dotValue + std::sqrt(k)) * N;
+		T const dotValue(dot(N, I));
+		T const k(static_cast<T>(1) - eta * eta * (static_cast<T>(1) - dotValue * dotValue));
+		return (eta * I - (eta * dotValue + std::sqrt(k)) * N) * static_cast<T>(k >= static_cast<T>(0));
 	}
 }//namespace glm

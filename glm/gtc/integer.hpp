@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,13 +24,13 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ///
-/// @ref gtc_bit
+/// @ref gtc_integer
 /// @file glm/gtc/integer.hpp
-/// @date 2014-10-25 / 2014-10-25
+/// @date 2014-11-17 / 2014-11-17
 /// @author Christophe Riccio
 ///
 /// @see core (dependence)
-/// @see gtc_bitfield (dependence)
+/// @see gtc_integer (dependence)
 ///
 /// @defgroup gtc_integer GLM_GTC_integer
 /// @ingroup gtc
@@ -41,9 +45,9 @@
 // Dependencies
 #include "../detail/setup.hpp"
 #include "../detail/precision.hpp"
-#include "../detail/_vectorize.hpp"
-#include "../vector_relational.hpp"
-#include "../common.hpp"
+#include "../detail/func_common.hpp"
+#include "../detail/func_integer.hpp"
+#include "../detail/func_exponential.hpp"
 #include <limits>
 
 #if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
@@ -55,57 +59,45 @@ namespace glm
 	/// @addtogroup gtc_integer
 	/// @{
 
-	/// Return true if the value is a power of two number.
-	///
+	/// Returns the log2 of x for integer values. Can be reliably using to compute mipmap count from the texture size.
 	/// @see gtc_integer
 	template <typename genIUType>
-	GLM_FUNC_DECL bool isPowerOfTwo(genIUType Value);
+	GLM_FUNC_DECL genIUType log2(genIUType x);
 
-	/// Return true if the value is a power of two number.
+	/// Modulus. Returns x % y
+	/// for each component in x using the floating point value y.
+	///
+	/// @tparam genIUType Integer-point scalar or vector types.
 	///
 	/// @see gtc_integer
-	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<bool, P> isPowerOfTwo(vecType<T, P> const & value);
-
-	/// Return the power of two number which value is just higher the input value,
-	/// round up to a power of two.
-	///
-	/// @see gtc_integer
+	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/mod.xml">GLSL mod man page</a>
+	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.3 Common Functions</a>
 	template <typename genIUType>
-	GLM_FUNC_DECL genIUType ceilPowerOfTwo(genIUType Value);
+	GLM_FUNC_DECL genIUType mod(genIUType x, genIUType y);
 
-	/// Return the power of two number which value is just higher the input value,
-	/// round up to a power of two.
+	/// Modulus. Returns x % y
+	/// for each component in x using the floating point value y.
+	///
+	/// @tparam T Integer scalar types.
+	/// @tparam vecType vector types.
 	///
 	/// @see gtc_integer
+	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/mod.xml">GLSL mod man page</a>
+	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.3 Common Functions</a>
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> ceilPowerOfTwo(vecType<T, P> const & value);
+	GLM_FUNC_DECL vecType<T, P> mod(vecType<T, P> const & x, T y);
 
-	/// Return the power of two number which value is just lower the input value,
-	/// round down to a power of two.
+	/// Modulus. Returns x % y
+	/// for each component in x using the floating point value y.
+	///
+	/// @tparam T Integer scalar types.
+	/// @tparam vecType vector types.
 	///
 	/// @see gtc_integer
-	template <typename genIUType>
-	GLM_FUNC_DECL genIUType floorPowerOfTwo(genIUType Value);
-
-	/// Return the power of two number which value is just lower the input value,
-	/// round down to a power of two.
-	///
-	/// @see gtc_integer
+	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/mod.xml">GLSL mod man page</a>
+	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.3 Common Functions</a>
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> floorPowerOfTwo(vecType<T, P> const & value);
-
-	/// Return the power of two number which value is the closet to the input value.
-	///
-	/// @see gtc_integer
-	template <typename genIUType>
-	GLM_FUNC_DECL genIUType roundPowerOfTwo(genIUType Value);
-
-	/// Return the power of two number which value is the closet to the input value.
-	///
-	/// @see gtc_integer
-	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_DECL vecType<T, P> roundPowerOfTwo(vecType<T, P> const & value);
+	GLM_FUNC_DECL vecType<T, P> mod(vecType<T, P> const & x, vecType<T, P> const & y);
 
 	/// @}
 } //namespace glm

@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,7 +52,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER tmat4x4<T, P> rotate
 	(
 		tmat4x4<T, P> const & m,
-		T const & angle,
+		T angle,
 		tvec3<T, P> const & v
 	)
 	{
@@ -84,7 +88,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER tmat4x4<T, P> rotate_slow
 	(
 		tmat4x4<T, P> const & m,
-		T const & angle, 
+		T angle, 
 		tvec3<T, P> const & v
 	)
 	{
@@ -146,12 +150,12 @@ namespace glm
 	template <typename T>
 	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> ortho
 	(
-		T const & left,
-		T const & right,
-		T const & bottom,
-		T const & top,
-		T const & zNear,
-		T const & zFar
+		T left,
+		T right,
+		T bottom,
+		T top,
+		T zNear,
+		T zFar
 	)
 	{
 		tmat4x4<T, defaultp> Result(1);
@@ -167,10 +171,10 @@ namespace glm
 	template <typename T>
 	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> ortho
 	(
-		T const & left,
-		T const & right,
-		T const & bottom,
-		T const & top
+		T left,
+		T right,
+		T bottom,
+		T top
 	)
 	{
 		tmat4x4<T, defaultp> Result(1);
@@ -185,12 +189,12 @@ namespace glm
 	template <typename T>
 	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> frustum
 	(
-		T const & left,
-		T const & right,
-		T const & bottom,
-		T const & top,
-		T const & nearVal,
-		T const & farVal
+		T left,
+		T right,
+		T bottom,
+		T top,
+		T nearVal,
+		T farVal
 	)
 	{
 		tmat4x4<T, defaultp> Result(0);
@@ -207,17 +211,16 @@ namespace glm
 	template <typename T>
 	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspective
 	(
-		T const & fovy,
-		T const & aspect,
-		T const & zNear,
-		T const & zFar
+		T fovy,
+		T aspect,
+		T zNear,
+		T zFar
 	)
 	{
-		assert(aspect != static_cast<T>(0));
-		assert(zFar != zNear);
+		assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		assert(zFar > zNear);
 
-		T const rad = fovy;
-		T const tanHalfFovy = tan(rad / static_cast<T>(2));
+		T const tanHalfFovy = tan(fovy / static_cast<T>(2));
 
 		tmat4x4<T, defaultp> Result(static_cast<T>(0));
 		Result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
@@ -231,11 +234,11 @@ namespace glm
 	template <typename T>
 	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveFov
 	(
-		T const & fov,
-		T const & width,
-		T const & height,
-		T const & zNear,
-		T const & zFar
+		T fov,
+		T width,
+		T height,
+		T zNear,
+		T zFar
 	)
 	{
 		assert(width > static_cast<T>(0));
