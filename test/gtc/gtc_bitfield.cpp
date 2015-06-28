@@ -630,7 +630,7 @@ namespace bitfieldInterleave
 
 			std::printf("glm::detail::bitfieldInterleave Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
-
+/*
 #		if(GLM_ARCH != GLM_ARCH_PURE)
 		{
 			// SIMD
@@ -649,7 +649,7 @@ namespace bitfieldInterleave
 			std::printf("_mm_bit_interleave_si128 Time %d clocks\n", static_cast<unsigned int>(Time));
 		}
 #		endif//(GLM_ARCH != GLM_ARCH_PURE)
-
+*/
 		return 0;
 	}
 }//namespace bitfieldInterleave
