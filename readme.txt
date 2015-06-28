@@ -68,6 +68,7 @@ GLM 0.9.6.4: 2015-0X-XX
 --------------------------------------------------------------------------------
 Fixes:
 - Fixed default precision for quat and dual_quat type #312
+- Fixed build errors when using functions in glm/gtc/reciprocal.hpp #348
 
 ================================================================================
 GLM 0.9.6.3: 2015-02-15
