@@ -43,11 +43,6 @@ namespace glm
 	{}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tvec3<T, P>::tvec3(tvec3<T, P> const & v)
-		: x(v.x), y(v.y), z(v.z)
-	{}
-
-	template <typename T, precision P>
 	template <precision Q>
 	GLM_FUNC_QUALIFIER tvec3<T, P>::tvec3(tvec3<T, Q> const & v)
 		: x(v.x), y(v.y), z(v.z)

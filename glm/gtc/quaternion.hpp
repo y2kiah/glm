@@ -91,7 +91,7 @@ namespace glm
 		// Implicit basic constructors
 
 		GLM_FUNC_DECL tquat();
-		GLM_FUNC_DECL tquat(tquat<T, P> const & q);
+		GLM_FUNC_DECL tquat(tquat<T, P> const & q) = default;
 		template <precision Q>
 		GLM_FUNC_DECL tquat(tquat<T, Q> const & q);
 
